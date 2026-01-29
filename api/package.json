@@ -1,0 +1,12 @@
+{
+  "name": "puzzle-guardians-backend",
+  "version": "1.0.0",
+  "description": "Puzzle & Guardians Quest Dashboard Backend API",
+  "main": "api/transactions.js",
+  "dependencies": {
+    "ethers": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
