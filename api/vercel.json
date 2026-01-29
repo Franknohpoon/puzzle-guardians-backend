@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "functions": {
+    "api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  }
+}
+```
+
+---
+
+## 📤 GitHub에 업로드하는 방법
+
+### **1. package.json 추가**
+1. 저장소로 이동: https://github.com/Franknohpoon/puzzle-guardians-backend
+2. **"Add file"** → **"Create new file"**
+3. 파일명: `package.json`
+4. 위 내용 복사해서 붙여넣기
+5. **"Commit new file"** 클릭
+
+### **2. vercel.json 추가**
+1. 다시 **"Add file"** → **"Create new file"**
+2. 파일명: `vercel.json`
+3. 위 내용 복사해서 붙여넣기
+4. **"Commit new file"** 클릭
+
+---
+
+## ⏳ 배포 대기
+
+두 파일 모두 추가한 후:
+- **1~2분 정도 기다리기**
+- Vercel이 자동으로 재배포합니다
+
+그 다음에 다시 테스트:
+```
+https://puzzle-guardians-backend.vercel.app/api/transactions
