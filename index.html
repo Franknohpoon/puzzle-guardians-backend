@@ -209,7 +209,7 @@
         const CACHE_DURATION = 5 * 60 * 1000; // 5분
         
         // Vercel API URL
-        const API_URL = 'https://puzzle-guardians-backend-v2.vercel.app/api/transactions';
+        const API_URL = 'https://puzzle-guardians-backend.vercel.app/api/transactions';
         
         // 퀘스트 정의
         const QUESTS = [
@@ -275,7 +275,43 @@
                 endDate: new Date('2026-12-31'),
                 reward: 10,
                 token: 'BORA'
-            }
+            },
+            // 이벤트 리그 1회차
+            {id: 101, name: '이벤트 리그 1회차 - 1등', description: '랭킹 1위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 4350, token: 'BORA', category: 'event'},
+            {id: 102, name: '이벤트 리그 1회차 - 2등', description: '랭킹 2위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 2910, token: 'BORA', category: 'event'},
+            {id: 103, name: '이벤트 리그 1회차 - 3등', description: '랭킹 3위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 1950, token: 'BORA', category: 'event'},
+            {id: 104, name: '이벤트 리그 1회차 - 4~5위', description: '랭킹 4~5위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 1310, token: 'BORA', category: 'event'},
+            {id: 105, name: '이벤트 리그 1회차 - 6~10위', description: '랭킹 6~10위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 880, token: 'BORA', category: 'event'},
+            {id: 106, name: '이벤트 리그 1회차 - 11~20위', description: '랭킹 11~20위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 590, token: 'BORA', category: 'event'},
+            {id: 107, name: '이벤트 리그 1회차 - 21~30위', description: '랭킹 21~30위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 390, token: 'BORA', category: 'event'},
+            {id: 108, name: '이벤트 리그 1회차 - 31~50위', description: '랭킹 31~50위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 260, token: 'BORA', category: 'event'},
+            {id: 109, name: '이벤트 리그 1회차 - 51~70위', description: '랭킹 51~70위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 180, token: 'BORA', category: 'event'},
+            {id: 110, name: '이벤트 리그 1회차 - 71~100위', description: '랭킹 71~100위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 120, token: 'BORA', category: 'event'},
+            {id: 111, name: '이벤트 리그 1회차 - 101~150위', description: '랭킹 101~150위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 80, token: 'BORA', category: 'event'},
+            {id: 112, name: '이벤트 리그 1회차 - 150~200위', description: '랭킹 150~200위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 50, token: 'BORA', category: 'event'},
+            {id: 113, name: '이벤트 리그 1회차 - 201~300위', description: '랭킹 201~300위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 40, token: 'BORA', category: 'event'},
+            {id: 114, name: '이벤트 리그 1회차 - 301~500위', description: '랭킹 301~500위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 30, token: 'BORA', category: 'event'},
+            {id: 115, name: '이벤트 리그 1회차 - 501~750위', description: '랭킹 501~750위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 20, token: 'BORA', category: 'event'},
+            {id: 116, name: '이벤트 리그 1회차 - 751~1000위', description: '랭킹 751~1000위', startDate: new Date('2025-11-19'), endDate: new Date('2025-11-29'), reward: 10, token: 'BORA', category: 'event'},
+            // 이벤트 리그 2회차
+            {id: 201, name: '이벤트 리그 2회차 - 1등', description: '랭킹 1위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 1960, token: 'BORA', category: 'event'},
+            {id: 202, name: '이벤트 리그 2회차 - 2등', description: '랭킹 2위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 1360, token: 'BORA', category: 'event'},
+            {id: 203, name: '이벤트 리그 2회차 - 3등', description: '랭킹 3위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 940, token: 'BORA', category: 'event'},
+            {id: 204, name: '이벤트 리그 2회차 - 4~5위', description: '랭킹 4~5위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 650, token: 'BORA', category: 'event'},
+            {id: 205, name: '이벤트 리그 2회차 - 6~10위', description: '랭킹 6~10위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 450, token: 'BORA', category: 'event'},
+            {id: 206, name: '이벤트 리그 2회차 - 11~20위', description: '랭킹 11~20위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 310, token: 'BORA', category: 'event'},
+            {id: 207, name: '이벤트 리그 2회차 - 21~30위', description: '랭킹 21~30위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 210, token: 'BORA', category: 'event'},
+            {id: 208, name: '이벤트 리그 2회차 - 31~50위', description: '랭킹 31~50위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 150, token: 'BORA', category: 'event'},
+            {id: 209, name: '이벤트 리그 2회차 - 51~70위', description: '랭킹 51~70위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 100, token: 'BORA', category: 'event'},
+            {id: 210, name: '이벤트 리그 2회차 - 71~100위', description: '랭킹 71~100위', startDate: new Date('2025-12-06'), endDate: new Date('2025-12-13'), reward: 70, token: 'BORA', category: 'event'},
+            // 이벤트 리그 3회차
+            {id: 301, name: '이벤트 리그 3회차 - 1등', description: '랭킹 1위', startDate: new Date('2025-12-27'), endDate: new Date('2026-01-02'), reward: 10460, token: 'BORA', category: 'event'},
+            {id: 302, name: '이벤트 리그 3회차 - 2등', description: '랭킹 2위', startDate: new Date('2025-12-27'), endDate: new Date('2026-01-02'), reward: 4810, token: 'BORA', category: 'event'},
+            {id: 303, name: '이벤트 리그 3회차 - 3등', description: '랭킹 3위', startDate: new Date('2025-12-27'), endDate: new Date('2026-01-02'), reward: 2210, token: 'BORA', category: 'event'},
+            {id: 304, name: '이벤트 리그 3회차 - 4~5위', description: '랭킹 4~5위', startDate: new Date('2025-12-27'), endDate: new Date('2026-01-02'), reward: 1020, token: 'BORA', category: 'event'},
+            {id: 305, name: '이벤트 리그 3회차 - 6~10위', description: '랭킹 6~10위', startDate: new Date('2025-12-27'), endDate: new Date('2026-01-02'), reward: 470, token: 'BORA', category: 'event'},
+            {id: 306, name: '이벤트 리그 3회차 - 11~20위', description: '랭킹 11~20위', startDate: new Date('2025-12-27'), endDate: new Date('2026-01-02'), reward: 220, token: 'BORA', category: 'event'},
+            {id: 307, name: '이벤트 리그 3회차 - 21~30위', description: '랭킹 21~30위', startDate: new Date('2025-12-27'), endDate: new Date('2026-01-02'), reward: 100, token: 'BORA', category: 'event'}
         ];
 
         let currentPage = 1;
@@ -472,58 +508,38 @@
             renderQuestList();
         }
 
-        // 퀘스트 목록 렌더링
+        // 퀘스트 목록 렌더링 (그룹화)
         function renderQuestList() {
             const filterValue = document.getElementById('questFilter')?.value || 'default';
             
-            let questsToShow = QUESTS.map(quest => ({
+            // 퀘스트와 이벤트 분리
+            const regularQuests = QUESTS.filter(q => !q.category).map(quest => ({
                 quest: quest,
                 stats: questStatsData[quest.id],
                 status: getQuestStatus(quest)
             }));
+            
+            // 이벤트를 회차별로 그룹화
+            const events = {
+                1: QUESTS.filter(q => q.category === 'event' && q.id >= 101 && q.id < 200),
+                2: QUESTS.filter(q => q.category === 'event' && q.id >= 201 && q.id < 300),
+                3: QUESTS.filter(q => q.category === 'event' && q.id >= 301 && q.id < 400)
+            };
 
-            if (filterValue === 'status-active') {
-                questsToShow = questsToShow.filter(q => q.status === 'active');
-            } else if (filterValue === 'status-ended') {
-                questsToShow = questsToShow.filter(q => q.status === 'ended');
-            }
+            let html = '';
 
-            switch(filterValue) {
-                case 'id-asc':
-                    questsToShow.sort((a, b) => a.quest.id - b.quest.id);
-                    break;
-                case 'id-desc':
-                    questsToShow.sort((a, b) => b.quest.id - a.quest.id);
-                    break;
-                case 'start-asc':
-                    questsToShow.sort((a, b) => a.quest.startDate - b.quest.startDate);
-                    break;
-                case 'start-desc':
-                    questsToShow.sort((a, b) => b.quest.startDate - a.quest.startDate);
-                    break;
-                case 'reward-asc':
-                    questsToShow.sort((a, b) => a.quest.reward - b.quest.reward);
-                    break;
-                case 'reward-desc':
-                    questsToShow.sort((a, b) => b.quest.reward - a.quest.reward);
-                    break;
-                case 'claims-desc':
-                    questsToShow.sort((a, b) => b.stats.claims - a.stats.claims);
-                    break;
-                case 'claims-asc':
-                    questsToShow.sort((a, b) => a.stats.claims - b.stats.claims);
-                    break;
-            }
-
-            const html = questsToShow.map(({quest, stats, status}) => {
+            // 일반 퀘스트 렌더링
+            html += '<h2 class="text-2xl font-bold mb-4 text-gray-800">📊 일반 퀘스트</h2>';
+            
+            regularQuests.forEach(({quest, stats, status}) => {
                 const statusText = status === 'active' ? '진행중' : status === 'ended' ? '종료' : '예정';
                 const statusClass = status === 'active' ? 'bg-green-500' : status === 'ended' ? 'bg-red-500' : 'bg-orange-500';
                 const cardClass = status === 'active' ? 'quest-active' : status === 'ended' ? 'quest-ended' : 'quest-upcoming';
                 
                 const progress = stats.claims > 0 ? Math.min(100, (stats.claims / 100) * 100) : 0;
 
-                return `
-                    <div class="quest-card ${cardClass}">
+                html += `
+                    <div class="quest-card ${cardClass} mb-4">
                         <div class="flex items-start justify-between mb-3">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
@@ -562,9 +578,98 @@
                         <p class="text-xs text-gray-500 mt-1 text-right">활동률: ${progress.toFixed(1)}%</p>
                     </div>
                 `;
-            }).join('');
+            });
 
-            document.getElementById('questList').innerHTML = html || '<p class="text-center text-gray-500 py-8">해당 조건의 퀘스트가 없습니다.</p>';
+            // 이벤트 리그 렌더링
+            html += '<h2 class="text-2xl font-bold mb-4 mt-8 text-gray-800">🏆 이벤트 리그</h2>';
+            
+            [1, 2, 3].forEach(round => {
+                const eventQuests = events[round];
+                if (eventQuests.length === 0) return;
+
+                // 이벤트 전체 통계 계산
+                let totalClaims = 0;
+                let totalUsers = new Set();
+                let totalPaid = 0;
+                
+                eventQuests.forEach(q => {
+                    const stats = questStatsData[q.id];
+                    totalClaims += stats.claims;
+                    stats.users.forEach(u => totalUsers.add(u));
+                    totalPaid += stats.totalPaid;
+                });
+
+                const firstQuest = eventQuests[0];
+                const status = getQuestStatus(firstQuest);
+                const statusText = status === 'active' ? '진행중' : status === 'ended' ? '종료' : '예정';
+                const statusClass = status === 'active' ? 'bg-green-500' : status === 'ended' ? 'bg-red-500' : 'bg-orange-500';
+                const cardClass = status === 'active' ? 'quest-active' : status === 'ended' ? 'quest-ended' : 'quest-upcoming';
+
+                html += `
+                    <div class="quest-card ${cardClass} mb-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-bold text-xl text-gray-800">🏆 이벤트 리그 ${round}회차</h3>
+                                    <span class="status-badge ${statusClass} text-white">${statusText}</span>
+                                </div>
+                                <p class="text-xs text-gray-500">
+                                    📅 ${firstQuest.startDate.toLocaleDateString('ko-KR')} ~ ${firstQuest.endDate.toLocaleDateString('ko-KR')}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 mb-4">
+                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                <p class="text-xs text-purple-600 mb-1 font-semibold">총 클레임</p>
+                                <p class="text-2xl font-bold text-purple-700">${totalClaims.toLocaleString()}</p>
+                            </div>
+                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                <p class="text-xs text-purple-600 mb-1 font-semibold">참여 유저</p>
+                                <p class="text-2xl font-bold text-purple-700">${totalUsers.size.toLocaleString()}</p>
+                            </div>
+                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                <p class="text-xs text-purple-600 mb-1 font-semibold">총 지급액</p>
+                                <p class="text-2xl font-bold text-purple-700">${totalPaid.toLocaleString()}</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-sm text-gray-700 mb-3">등수별 상세 내역</h4>
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-gray-300">
+                                        <th class="text-left py-2 text-gray-600">등수</th>
+                                        <th class="text-right py-2 text-gray-600">보상</th>
+                                        <th class="text-right py-2 text-gray-600">클레임 수</th>
+                                        <th class="text-right py-2 text-gray-600">지급액</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                eventQuests.forEach(q => {
+                    const stats = questStatsData[q.id];
+                    const rank = q.description.replace('랭킹 ', '');
+                    html += `
+                        <tr class="border-b border-gray-200 hover:bg-white">
+                            <td class="py-2 text-gray-800">${rank}</td>
+                            <td class="text-right py-2 font-semibold text-purple-600">${q.reward.toLocaleString()} BORA</td>
+                            <td class="text-right py-2 text-gray-700">${stats.claims.toLocaleString()}회</td>
+                            <td class="text-right py-2 text-gray-700">${stats.totalPaid.toLocaleString()} BORA</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('questList').innerHTML = html || '<p class="text-center text-gray-500 py-8">데이터가 없습니다.</p>';
         }
 
         // 차트 생성
