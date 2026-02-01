@@ -54,6 +54,13 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.3s ease-out;
+        }
         .status-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
@@ -139,6 +146,78 @@
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <h2 class="text-xl font-bold mb-4 text-gray-800">🎯 퀘스트별 분포</h2>
                 <canvas id="questDistributionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 유저 검색 섹션 -->
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">🔍 유저 검색</h2>
+            <div class="flex gap-3 mb-4">
+                <input 
+                    type="text" 
+                    id="userSearchInput" 
+                    placeholder="지갑 주소 입력 (0x...)" 
+                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+                <button 
+                    onclick="searchUser()" 
+                    class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold">
+                    검색
+                </button>
+                <button 
+                    onclick="clearSearch()" 
+                    class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-semibold">
+                    초기화
+                </button>
+            </div>
+            
+            <!-- 검색 결과 -->
+            <div id="userSearchResult" class="hidden">
+                <!-- 유저 요약 -->
+                <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg mb-4 border border-purple-200">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <p class="text-xs text-gray-600 mb-1">지갑 주소</p>
+                            <p class="font-mono text-sm font-bold text-purple-700" id="searchedAddress">-</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-600 mb-1">총 클레임</p>
+                            <p class="text-2xl font-bold text-purple-700" id="searchedClaimCount">0</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-600 mb-1">총 수령액</p>
+                            <p class="text-2xl font-bold text-green-600" id="searchedTotalAmount">0 BORA</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-600 mb-1">평균 금액</p>
+                            <p class="text-2xl font-bold text-blue-600" id="searchedAvgAmount">0 BORA</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 클레임 내역 -->
+                <h3 class="font-bold text-gray-800 mb-3">📋 클레임 내역</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 border-b-2 border-gray-300">
+                                <th class="text-left py-3 px-4 text-gray-700 font-semibold">날짜</th>
+                                <th class="text-left py-3 px-4 text-gray-700 font-semibold">퀘스트</th>
+                                <th class="text-right py-3 px-4 text-gray-700 font-semibold">금액</th>
+                                <th class="text-left py-3 px-4 text-gray-700 font-semibold">트랜잭션</th>
+                            </tr>
+                        </thead>
+                        <tbody id="searchedTransactions">
+                            <!-- 검색 결과가 여기에 표시됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 검색 결과 없음 -->
+            <div id="userSearchNoResult" class="hidden text-center py-8 text-gray-500">
+                <p class="text-lg mb-2">🔍 검색 결과가 없습니다</p>
+                <p class="text-sm">해당 지갑 주소의 클레임 내역이 없습니다.</p>
             </div>
         </div>
 
@@ -588,7 +667,21 @@
                         <div class="flex items-center gap-3">
                             <span class="text-lg font-bold ${index < 3 ? 'text-2xl' : ''}">${medal}</span>
                             <div>
-                                <p class="font-mono text-sm font-semibold text-gray-800">${shortAddress}</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="font-mono text-sm font-semibold text-gray-800">${shortAddress}</p>
+                                    <button 
+                                        onclick="copyAddress('${user.address}')" 
+                                        class="text-gray-400 hover:text-purple-600 transition-colors"
+                                        title="주소 복사">
+                                        📋
+                                    </button>
+                                    <button 
+                                        onclick="searchUserByAddress('${user.address}')" 
+                                        class="text-gray-400 hover:text-blue-600 transition-colors"
+                                        title="상세 보기">
+                                        🔍
+                                    </button>
+                                </div>
                                 <p class="text-xs text-gray-500">평균 ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})} BORA</p>
                             </div>
                         </div>
@@ -615,7 +708,21 @@
                         <div class="flex items-center gap-3">
                             <span class="text-lg font-bold ${index < 3 ? 'text-2xl' : ''}">${medal}</span>
                             <div>
-                                <p class="font-mono text-sm font-semibold text-gray-800">${shortAddress}</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="font-mono text-sm font-semibold text-gray-800">${shortAddress}</p>
+                                    <button 
+                                        onclick="copyAddress('${user.address}')" 
+                                        class="text-gray-400 hover:text-purple-600 transition-colors"
+                                        title="주소 복사">
+                                        📋
+                                    </button>
+                                    <button 
+                                        onclick="searchUserByAddress('${user.address}')" 
+                                        class="text-gray-400 hover:text-blue-600 transition-colors"
+                                        title="상세 보기">
+                                        🔍
+                                    </button>
+                                </div>
                                 <p class="text-xs text-gray-500">${user.claimCount}회 클레임</p>
                             </div>
                         </div>
@@ -629,6 +736,114 @@
             
             document.getElementById('topAmountUsers').innerHTML = html || '<p class="text-center text-gray-500 py-4">데이터가 없습니다.</p>';
         }
+
+        // 유저 검색
+        function searchUser() {
+            const searchInput = document.getElementById('userSearchInput').value.trim().toLowerCase();
+            
+            if (!searchInput) {
+                alert('지갑 주소를 입력해주세요.');
+                return;
+            }
+            
+            // 해당 유저의 트랜잭션 필터링
+            const userTransactions = allTransactions.filter(tx => 
+                tx.to.toLowerCase() === searchInput
+            );
+            
+            if (userTransactions.length === 0) {
+                document.getElementById('userSearchResult').classList.add('hidden');
+                document.getElementById('userSearchNoResult').classList.remove('hidden');
+                return;
+            }
+            
+            // 통계 계산
+            const claimCount = userTransactions.length;
+            const totalAmount = userTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+            const avgAmount = totalAmount / claimCount;
+            
+            // 요약 정보 표시
+            document.getElementById('searchedAddress').textContent = searchInput;
+            document.getElementById('searchedClaimCount').textContent = claimCount.toLocaleString() + '회';
+            document.getElementById('searchedTotalAmount').textContent = totalAmount.toLocaleString(undefined, {maximumFractionDigits: 2}) + ' BORA';
+            document.getElementById('searchedAvgAmount').textContent = avgAmount.toLocaleString(undefined, {maximumFractionDigits: 2}) + ' BORA';
+            
+            // 트랜잭션 목록 표시 (최신순)
+            const transactionsHtml = userTransactions
+                .sort((a, b) => b.timestamp - a.timestamp)
+                .map(tx => {
+                    const date = new Date(tx.timestamp).toLocaleString('ko-KR');
+                    const questName = tx.quest ? tx.quest.name : '미분류';
+                    const shortHash = tx.txHash.slice(0, 10) + '...' + tx.txHash.slice(-8);
+                    const explorerUrl = `https://kaiascan.io/tx/${tx.txHash}`;
+                    
+                    return `
+                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-gray-700">${date}</td>
+                            <td class="py-3 px-4">
+                                <span class="inline-block px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-semibold">
+                                    ${questName}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-right font-semibold text-green-600">${tx.amount.toLocaleString()} BORA</td>
+                            <td class="py-3 px-4">
+                                <a href="${explorerUrl}" target="_blank" class="text-blue-600 hover:text-blue-800 font-mono text-xs">
+                                    ${shortHash} ↗
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            
+            document.getElementById('searchedTransactions').innerHTML = transactionsHtml;
+            document.getElementById('userSearchResult').classList.remove('hidden');
+            document.getElementById('userSearchNoResult').classList.add('hidden');
+            
+            // 검색 결과로 스크롤
+            document.getElementById('userSearchResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // 검색 초기화
+        function clearSearch() {
+            document.getElementById('userSearchInput').value = '';
+            document.getElementById('userSearchResult').classList.add('hidden');
+            document.getElementById('userSearchNoResult').classList.add('hidden');
+        }
+        
+        // 주소 복사
+        function copyAddress(address) {
+            navigator.clipboard.writeText(address).then(() => {
+                // 복사 성공 알림
+                const notification = document.createElement('div');
+                notification.textContent = '✅ 주소가 복사되었습니다!';
+                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 2000);
+            }).catch(err => {
+                alert('복사 실패: ' + err);
+            });
+        }
+        
+        // 유저 상세보기 (주소로 자동 검색)
+        function searchUserByAddress(address) {
+            document.getElementById('userSearchInput').value = address;
+            searchUser();
+        }
+        
+        // Enter 키로 검색
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('userSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchUser();
+                    }
+                });
+            }
+        });
 
         // 퀘스트 목록 렌더링 (그룹화)
         function renderQuestList() {
