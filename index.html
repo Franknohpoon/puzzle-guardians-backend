@@ -175,11 +175,22 @@
             <div id="userSearchResult" class="hidden">
                 <!-- 유저 요약 -->
                 <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg mb-4 border border-purple-200">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <p class="text-xs text-gray-600 mb-1">지갑 주소</p>
-                            <p class="font-mono text-sm font-bold text-purple-700" id="searchedAddress">-</p>
+                    <!-- 지갑 주소 (전체 너비) -->
+                    <div class="mb-4 pb-3 border-b border-purple-200">
+                        <p class="text-xs text-gray-600 mb-1">지갑 주소</p>
+                        <div class="flex items-center gap-2">
+                            <p class="font-mono text-sm font-bold text-purple-700 break-all" id="searchedAddress">-</p>
+                            <button 
+                                onclick="copySearchedAddress()" 
+                                class="text-gray-400 hover:text-purple-600 transition-colors flex-shrink-0"
+                                title="주소 복사">
+                                📋
+                            </button>
                         </div>
+                    </div>
+                    
+                    <!-- 통계 (3컬럼) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <p class="text-xs text-gray-600 mb-1">총 클레임</p>
                             <p class="text-2xl font-bold text-purple-700" id="searchedClaimCount">0</p>
@@ -825,6 +836,12 @@
             }).catch(err => {
                 alert('복사 실패: ' + err);
             });
+        }
+        
+        // 검색된 주소 복사
+        function copySearchedAddress() {
+            const address = document.getElementById('searchedAddress').textContent;
+            copyAddress(address);
         }
         
         // 유저 상세보기 (주소로 자동 검색)
