@@ -450,9 +450,11 @@
                     quest: identifyQuest(tx)
                 })).sort((a, b) => b.timestamp - a.timestamp);
 
-                // BORA 잔액 조회 (간단한 계산)
+                // BORA 잔액 계산
                 const totalPaid = allTransactions.reduce((sum, tx) => sum + tx.amount, 0);
-                document.getElementById('totalBalance').textContent = '191,909';
+                const INITIAL_BALANCE = 191909; // 초기 잔액 (수동 설정 필요)
+                const currentBalance = INITIAL_BALANCE - totalPaid;
+                document.getElementById('totalBalance').textContent = currentBalance.toLocaleString(undefined, {maximumFractionDigits: 2});
                 
                 // 통계 업데이트
                 document.getElementById('totalClaims').textContent = allTransactions.length.toLocaleString();
