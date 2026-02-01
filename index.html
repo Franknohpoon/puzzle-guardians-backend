@@ -142,6 +142,25 @@
             </div>
         </div>
 
+        <!-- 유저 랭킹 섹션 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- 최다 클레임 유저 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">🏆 최다 클레임 유저 Top 10</h2>
+                <div id="topClaimUsers" class="space-y-3">
+                    <p class="text-center text-gray-500 py-4">데이터 로딩중...</p>
+                </div>
+            </div>
+            
+            <!-- 최다 금액 수령 유저 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">💰 최다 금액 수령 유저 Top 10</h2>
+                <div id="topAmountUsers" class="space-y-3">
+                    <p class="text-center text-gray-500 py-4">데이터 로딩중...</p>
+                </div>
+            </div>
+        </div>
+
         <!-- 퀘스트별 상세 현황 -->
         <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
             <div class="flex items-center justify-between mb-6">
@@ -209,7 +228,7 @@
         const CACHE_DURATION = 5 * 60 * 1000; // 5분
         
         // Vercel API URL
-       const API_URL = 'https://puzzle-guardians-backend-v2.vercel.app/api/transactions';
+        const API_URL = 'https://puzzle-guardians-backend-v2.vercel.app/api/transactions';
         
         // 퀘스트 정의
         const QUESTS = [
@@ -452,8 +471,16 @@
 
                 // BORA 잔액 계산
                 const totalPaid = allTransactions.reduce((sum, tx) => sum + tx.amount, 0);
-                const INITIAL_BALANCE = 191909; // 초기 잔액 (수동 설정 필요)
-                const currentBalance = INITIAL_BALANCE - totalPaid;
+                
+                // 초기 설정
+                const INITIAL_DEPOSIT = 762430;  // 초기 충전액
+                const MANAGEMENT_WITHDRAWAL = 200000;  // 관리상 출금
+                const DUPLICATE_PAYMENT = 1890;  // 이벤트2 중복 지급
+                
+                // 실제 보상 예산 = 초기 충전 - 출금 + 중복지급
+                const ACTUAL_BUDGET = INITIAL_DEPOSIT - MANAGEMENT_WITHDRAWAL + DUPLICATE_PAYMENT;
+                const currentBalance = ACTUAL_BUDGET - totalPaid;
+                
                 document.getElementById('totalBalance').textContent = currentBalance.toLocaleString(undefined, {maximumFractionDigits: 2});
                 
                 // 통계 업데이트
@@ -508,6 +535,99 @@
 
             questStatsData = questStats;
             renderQuestList();
+            updateUserRankings(); // 유저 랭킹 업데이트
+        }
+
+        // 유저 랭킹 업데이트
+        function updateUserRankings() {
+            const userStats = {};
+            
+            // 유저별 통계 계산
+            allTransactions.forEach(tx => {
+                if (!userStats[tx.to]) {
+                    userStats[tx.to] = {
+                        address: tx.to,
+                        claimCount: 0,
+                        totalAmount: 0,
+                        quests: new Set()
+                    };
+                }
+                
+                userStats[tx.to].claimCount++;
+                userStats[tx.to].totalAmount += tx.amount;
+                if (tx.quest) {
+                    userStats[tx.to].quests.add(tx.quest.name);
+                }
+            });
+            
+            const users = Object.values(userStats);
+            
+            // 최다 클레임 Top 10
+            const topClaimUsers = [...users]
+                .sort((a, b) => b.claimCount - a.claimCount)
+                .slice(0, 10);
+            
+            // 최다 금액 Top 10
+            const topAmountUsers = [...users]
+                .sort((a, b) => b.totalAmount - a.totalAmount)
+                .slice(0, 10);
+            
+            renderTopClaimUsers(topClaimUsers);
+            renderTopAmountUsers(topAmountUsers);
+        }
+        
+        // 최다 클레임 유저 렌더링
+        function renderTopClaimUsers(users) {
+            const html = users.map((user, index) => {
+                const shortAddress = user.address.slice(0, 6) + '...' + user.address.slice(-4);
+                const avgAmount = user.totalAmount / user.claimCount;
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+                
+                return `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-lg font-bold ${index < 3 ? 'text-2xl' : ''}">${medal}</span>
+                            <div>
+                                <p class="font-mono text-sm font-semibold text-gray-800">${shortAddress}</p>
+                                <p class="text-xs text-gray-500">평균 ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})} BORA</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-bold text-purple-600">${user.claimCount}회</p>
+                            <p class="text-xs text-gray-500">${user.totalAmount.toLocaleString()} BORA</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('topClaimUsers').innerHTML = html || '<p class="text-center text-gray-500 py-4">데이터가 없습니다.</p>';
+        }
+        
+        // 최다 금액 수령 유저 렌더링
+        function renderTopAmountUsers(users) {
+            const html = users.map((user, index) => {
+                const shortAddress = user.address.slice(0, 6) + '...' + user.address.slice(-4);
+                const avgAmount = user.totalAmount / user.claimCount;
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+                
+                return `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-lg font-bold ${index < 3 ? 'text-2xl' : ''}">${medal}</span>
+                            <div>
+                                <p class="font-mono text-sm font-semibold text-gray-800">${shortAddress}</p>
+                                <p class="text-xs text-gray-500">${user.claimCount}회 클레임</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-bold text-green-600">${user.totalAmount.toLocaleString()} BORA</p>
+                            <p class="text-xs text-gray-500">평균 ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('topAmountUsers').innerHTML = html || '<p class="text-center text-gray-500 py-4">데이터가 없습니다.</p>';
         }
 
         // 퀘스트 목록 렌더링 (그룹화)
