@@ -868,11 +868,48 @@
             const filterValue = document.getElementById('questFilter')?.value || 'default';
             
             // 퀘스트와 이벤트 분리
-            const regularQuests = QUESTS.filter(q => !q.category).map(quest => ({
+            let regularQuests = QUESTS.filter(q => !q.category).map(quest => ({
                 quest: quest,
                 stats: questStatsData[quest.id],
                 status: getQuestStatus(quest)
             }));
+            
+            // 필터 적용 (일반 퀘스트만)
+            if (filterValue === 'status-active') {
+                regularQuests = regularQuests.filter(q => q.status === 'active');
+            } else if (filterValue === 'status-ended') {
+                regularQuests = regularQuests.filter(q => q.status === 'ended');
+            } else if (filterValue === 'status-upcoming') {
+                regularQuests = regularQuests.filter(q => q.status === 'upcoming');
+            }
+            
+            // 정렬 적용
+            switch(filterValue) {
+                case 'id-asc':
+                    regularQuests.sort((a, b) => a.quest.id - b.quest.id);
+                    break;
+                case 'id-desc':
+                    regularQuests.sort((a, b) => b.quest.id - a.quest.id);
+                    break;
+                case 'start-asc':
+                    regularQuests.sort((a, b) => a.quest.startDate - b.quest.startDate);
+                    break;
+                case 'start-desc':
+                    regularQuests.sort((a, b) => b.quest.startDate - a.quest.startDate);
+                    break;
+                case 'reward-asc':
+                    regularQuests.sort((a, b) => a.quest.reward - b.quest.reward);
+                    break;
+                case 'reward-desc':
+                    regularQuests.sort((a, b) => b.quest.reward - a.quest.reward);
+                    break;
+                case 'claims-desc':
+                    regularQuests.sort((a, b) => b.stats.claims - a.stats.claims);
+                    break;
+                case 'claims-asc':
+                    regularQuests.sort((a, b) => a.stats.claims - b.stats.claims);
+                    break;
+            }
             
             // 이벤트를 회차별로 그룹화
             const events = {
@@ -886,7 +923,10 @@
             // 일반 퀘스트 렌더링
             html += '<h2 class="text-2xl font-bold mb-4 text-gray-800">📊 일반 퀘스트</h2>';
             
-            regularQuests.forEach(({quest, stats, status}) => {
+            if (regularQuests.length === 0) {
+                html += '<p class="text-center text-gray-500 py-8 mb-8">해당 조건의 퀘스트가 없습니다.</p>';
+            } else {
+                regularQuests.forEach(({quest, stats, status}) => {
                 const statusText = status === 'active' ? '진행중' : status === 'ended' ? '종료' : '예정';
                 const statusClass = status === 'active' ? 'bg-green-500' : status === 'ended' ? 'bg-red-500' : 'bg-orange-500';
                 const cardClass = status === 'active' ? 'quest-active' : status === 'ended' ? 'quest-ended' : 'quest-upcoming';
@@ -934,6 +974,7 @@
                     </div>
                 `;
             });
+            }
 
             // 이벤트 리그 렌더링
             html += '<h2 class="text-2xl font-bold mb-4 mt-8 text-gray-800">🏆 이벤트 리그</h2>';
