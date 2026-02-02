@@ -562,13 +562,9 @@
                 // BORA 잔액 계산
                 const totalPaid = allTransactions.reduce((sum, tx) => sum + tx.amount, 0);
                 
-                // 초기 설정
-                const INITIAL_DEPOSIT = 762430;  // 초기 충전액
-                const MANAGEMENT_WITHDRAWAL = 200000;  // 관리상 출금
-                const DUPLICATE_PAYMENT = 1890;  // 이벤트2 중복 지급
-                
-                // 실제 보상 예산 = 초기 충전 - 출금 + 중복지급
-                const ACTUAL_BUDGET = INITIAL_DEPOSIT - MANAGEMENT_WITHDRAWAL + DUPLICATE_PAYMENT;
+                // 역산한 정확한 초기 예산
+                // 현재 실제 잔액(191,879) + 실제 총 지급액(570,561) = 762,440
+                const ACTUAL_BUDGET = 762440;
                 const currentBalance = ACTUAL_BUDGET - totalPaid;
                 
                 document.getElementById('totalBalance').textContent = currentBalance.toLocaleString(undefined, {maximumFractionDigits: 2});
