@@ -8,23 +8,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
             border-radius: 1rem;
             padding: 1.5rem;
             color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             transition: transform 0.2s;
+            backdrop-filter: blur(10px);
         }
         .stat-card:hover {
             transform: translateY(-5px);
         }
         .quest-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 0.75rem;
             padding: 1.25rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             border-left: 4px solid #667eea;
             transition: all 0.2s;
+            backdrop-filter: blur(10px);
         }
         .quest-card:hover {
             box-shadow: 0 4px 16px rgba(0,0,0,0.12);
@@ -81,7 +83,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50" style="background-image: url('https://raw.githubusercontent.com/Franknohpoon/puzzle-guardians-backend/main/background.png'); background-size: cover; background-attachment: fixed; background-position: center; background-repeat: no-repeat;">
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- 헤더 -->
         <div class="mb-8">
@@ -261,6 +263,12 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-gray-800">📋 퀘스트별 상세 현황</h2>
                 <div class="flex gap-2">
+                    <button onclick="downloadQuestStatsCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm">
+                        📥 CSV 다운로드
+                    </button>
+                    <button onclick="downloadQuestStatsJSON()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm">
+                        📥 JSON 다운로드
+                    </button>
                     <select id="questFilter" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         <option value="status-active">진행중만 보기</option>
                         <option value="default">전체 보기</option>
@@ -286,7 +294,17 @@
 
         <!-- 최근 클레임 내역 -->
         <div class="bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-gray-800">🕒 최근 클레임 내역</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">🕒 최근 클레임 내역</h2>
+                <div class="flex gap-2">
+                    <button onclick="downloadTransactionsCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm">
+                        📥 CSV 다운로드
+                    </button>
+                    <button onclick="downloadTransactionsJSON()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm">
+                        📥 JSON 다운로드
+                    </button>
+                </div>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
@@ -1257,6 +1275,125 @@
             localStorage.removeItem(CACHE_KEY);
             currentPage = 1;
             await initializeData();
+        }
+
+        // CSV 다운로드 함수
+        function downloadCSV(data, filename) {
+            const csv = data.join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        // JSON 다운로드 함수
+        function downloadJSON(data, filename) {
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        // 트랜잭션 CSV 다운로드
+        function downloadTransactionsCSV() {
+            const headers = ['날짜', '시간', '퀘스트 ID', '퀘스트명', '수신자 주소', '보상액 (BORA)', '트랜잭션 해시', '블록 번호'];
+            const rows = [headers.join(',')];
+            
+            allTransactions.forEach(tx => {
+                const date = new Date(tx.timestamp);
+                const dateStr = date.toLocaleDateString('ko-KR');
+                const timeStr = date.toLocaleTimeString('ko-KR');
+                const questId = tx.quest ? tx.quest.id : '미분류';
+                const questName = tx.quest ? tx.quest.name : '미분류';
+                const row = [
+                    dateStr,
+                    timeStr,
+                    questId,
+                    `"${questName}"`,
+                    tx.to,
+                    tx.amount,
+                    tx.txHash,
+                    tx.blockNumber
+                ].join(',');
+                rows.push(row);
+            });
+            
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadCSV(rows, `puzzle-guardians-transactions-${timestamp}.csv`);
+        }
+
+        // 트랜잭션 JSON 다운로드
+        function downloadTransactionsJSON() {
+            const data = allTransactions.map(tx => ({
+                date: new Date(tx.timestamp).toISOString(),
+                questId: tx.quest ? tx.quest.id : null,
+                questName: tx.quest ? tx.quest.name : '미분류',
+                toAddress: tx.to,
+                amount: tx.amount,
+                token: tx.token,
+                txHash: tx.txHash,
+                blockNumber: tx.blockNumber
+            }));
+            
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadJSON(data, `puzzle-guardians-transactions-${timestamp}.json`);
+        }
+
+        // 퀘스트 통계 CSV 다운로드
+        function downloadQuestStatsCSV() {
+            const headers = ['퀘스트 ID', '퀘스트명', '설명', '보상액 (BORA)', '시작일', '종료일', '상태', '클레임 수', '참여 유저 수', '총 지급액 (BORA)'];
+            const rows = [headers.join(',')];
+            
+            QUESTS.forEach(quest => {
+                const stats = questStatsData[quest.id];
+                const status = getQuestStatus(quest);
+                const statusText = status === 'active' ? '진행중' : status === 'ended' ? '종료' : '예정';
+                
+                const row = [
+                    quest.id,
+                    `"${quest.name}"`,
+                    `"${quest.description}"`,
+                    quest.reward,
+                    quest.startDate.toLocaleDateString('ko-KR'),
+                    quest.endDate.toLocaleDateString('ko-KR'),
+                    statusText,
+                    stats.claims,
+                    stats.users.size,
+                    stats.totalPaid
+                ].join(',');
+                rows.push(row);
+            });
+            
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadCSV(rows, `puzzle-guardians-quest-stats-${timestamp}.csv`);
+        }
+
+        // 퀘스트 통계 JSON 다운로드
+        function downloadQuestStatsJSON() {
+            const data = QUESTS.map(quest => {
+                const stats = questStatsData[quest.id];
+                const status = getQuestStatus(quest);
+                return {
+                    questId: quest.id,
+                    questName: quest.name,
+                    description: quest.description,
+                    reward: quest.reward,
+                    token: quest.token,
+                    startDate: quest.startDate.toISOString(),
+                    endDate: quest.endDate.toISOString(),
+                    status: status,
+                    claimCount: stats.claims,
+                    uniqueUsers: stats.users.size,
+                    totalPaid: stats.totalPaid,
+                    category: quest.category || 'regular'
+                };
+            });
+            
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadJSON(data, `puzzle-guardians-quest-stats-${timestamp}.json`);
         }
 
         // 초기화
