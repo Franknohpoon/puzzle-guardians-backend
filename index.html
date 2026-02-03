@@ -262,7 +262,8 @@
                 <h2 class="text-xl font-bold text-gray-800">📋 퀘스트별 상세 현황</h2>
                 <div class="flex gap-2">
                     <select id="questFilter" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option value="default">기본 순서</option>
+                        <option value="status-active">진행중만 보기</option>
+                        <option value="default">전체 보기</option>
                         <option value="id-asc">퀘스트 번호순 (오름차순)</option>
                         <option value="id-desc">퀘스트 번호순 (내림차순)</option>
                         <option value="start-asc">시작일순 (빠른순)</option>
@@ -271,7 +272,6 @@
                         <option value="reward-desc">보상 규모순 (큰순)</option>
                         <option value="claims-desc">클레임 많은순</option>
                         <option value="claims-asc">클레임 적은순</option>
-                        <option value="status-active">진행중만 보기</option>
                         <option value="status-ended">종료된 것만 보기</option>
                     </select>
                 </div>
@@ -865,7 +865,7 @@
 
         // 퀘스트 목록 렌더링 (그룹화)
         function renderQuestList() {
-            const filterValue = document.getElementById('questFilter')?.value || 'default';
+            const filterValue = document.getElementById('questFilter')?.value || 'status-active';
             
             // 퀘스트와 이벤트 분리
             let regularQuests = QUESTS.filter(q => !q.category).map(quest => ({
