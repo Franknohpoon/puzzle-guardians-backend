@@ -845,6 +845,22 @@
             copyAddress(address);
         }
         
+        // 이벤트 상세 토글
+        function toggleEventDetail(round) {
+            const detailElement = document.getElementById(`event-detail-${round}`);
+            const arrowElement = document.getElementById(`event-arrow-${round}`);
+            
+            if (detailElement.classList.contains('hidden')) {
+                // 펼치기
+                detailElement.classList.remove('hidden');
+                arrowElement.style.transform = 'rotate(90deg)';
+            } else {
+                // 접기
+                detailElement.classList.add('hidden');
+                arrowElement.style.transform = 'rotate(0deg)';
+            }
+        }
+        
         // 유저 상세보기 (주소로 자동 검색)
         function searchUserByAddress(address) {
             document.getElementById('userSearchInput').value = address;
@@ -1003,45 +1019,54 @@
 
                 html += `
                     <div class="quest-card ${cardClass} mb-6">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <h3 class="font-bold text-xl text-gray-800">🏆 이벤트 리그 ${round}회차</h3>
-                                    <span class="status-badge ${statusClass} text-white">${statusText}</span>
+                        <!-- 헤더 (항상 표시, 클릭 가능) -->
+                        <div 
+                            onclick="toggleEventDetail(${round})" 
+                            class="cursor-pointer hover:bg-gray-50 p-4 rounded-lg transition-colors -m-4 mb-4"
+                        >
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span id="event-arrow-${round}" class="text-gray-500 transition-transform">▶</span>
+                                        <h3 class="font-bold text-xl text-gray-800">🏆 이벤트 리그 ${round}회차</h3>
+                                        <span class="status-badge ${statusClass} text-white">${statusText}</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 ml-6">
+                                        📅 ${firstQuest.startDate.toLocaleDateString('ko-KR')} ~ ${firstQuest.endDate.toLocaleDateString('ko-KR')}
+                                    </p>
                                 </div>
-                                <p class="text-xs text-gray-500">
-                                    📅 ${firstQuest.startDate.toLocaleDateString('ko-KR')} ~ ${firstQuest.endDate.toLocaleDateString('ko-KR')}
-                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mt-4">
+                                <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                    <p class="text-xs text-purple-600 mb-1 font-semibold">총 클레임</p>
+                                    <p class="text-2xl font-bold text-purple-700">${totalClaims.toLocaleString()}</p>
+                                </div>
+                                <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                    <p class="text-xs text-purple-600 mb-1 font-semibold">참여 유저</p>
+                                    <p class="text-2xl font-bold text-purple-700">${totalUsers.size.toLocaleString()}</p>
+                                </div>
+                                <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                    <p class="text-xs text-purple-600 mb-1 font-semibold">총 지급액</p>
+                                    <p class="text-2xl font-bold text-purple-700">${totalPaid.toLocaleString()}</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
-                                <p class="text-xs text-purple-600 mb-1 font-semibold">총 클레임</p>
-                                <p class="text-2xl font-bold text-purple-700">${totalClaims.toLocaleString()}</p>
-                            </div>
-                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
-                                <p class="text-xs text-purple-600 mb-1 font-semibold">참여 유저</p>
-                                <p class="text-2xl font-bold text-purple-700">${totalUsers.size.toLocaleString()}</p>
-                            </div>
-                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
-                                <p class="text-xs text-purple-600 mb-1 font-semibold">총 지급액</p>
-                                <p class="text-2xl font-bold text-purple-700">${totalPaid.toLocaleString()}</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-semibold text-sm text-gray-700 mb-3">등수별 상세 내역</h4>
-                            <table class="w-full text-sm">
-                                <thead>
-                                    <tr class="border-b border-gray-300">
-                                        <th class="text-left py-2 text-gray-600">등수</th>
-                                        <th class="text-right py-2 text-gray-600">보상</th>
-                                        <th class="text-right py-2 text-gray-600">클레임 수</th>
-                                        <th class="text-right py-2 text-gray-600">지급액</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                        <!-- 상세 내역 (접힌 상태) -->
+                        <div id="event-detail-${round}" class="hidden mt-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-sm text-gray-700 mb-3">등수별 상세 내역</h4>
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-gray-300">
+                                            <th class="text-left py-2 text-gray-600">등수</th>
+                                            <th class="text-right py-2 text-gray-600">보상</th>
+                                            <th class="text-right py-2 text-gray-600">클레임 수</th>
+                                            <th class="text-right py-2 text-gray-600">지급액</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                 `;
 
                 eventQuests.forEach(q => {
@@ -1058,8 +1083,9 @@
                 });
 
                 html += `
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 `;
