@@ -87,10 +87,10 @@
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- 헤더 -->
         <div class="mb-8">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-4 bg-white bg-opacity-90 backdrop-blur-md p-6 rounded-lg shadow-lg">
                 <div>
-                    <h1 class="text-4xl font-bold text-gray-800 mb-2">🎮 Puzzle&Guardians</h1>
-                    <p class="text-gray-600">퀘스트 보상 클레임 현황 대시보드</p>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2" style="text-shadow: 2px 2px 4px rgba(255,255,255,0.8);">🎮 Puzzle&Guardians</h1>
+                    <p class="text-gray-800 font-semibold" style="text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">퀘스트 보상 클레임 현황 대시보드</p>
                 </div>
                 <div class="flex gap-2">
                     <button onclick="clearCache()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold">
@@ -101,7 +101,7 @@
                     </button>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div class="bg-white bg-opacity-95 backdrop-blur-md p-4 rounded-lg shadow-sm border border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 mb-1">보상 지갑 주소</p>
@@ -1004,7 +1004,17 @@
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${progress}%"></div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1 text-right">활동률: ${progress.toFixed(1)}%</p>
+                        <div class="flex items-center justify-between mt-2">
+                            <p class="text-xs text-gray-500">활동률: ${progress.toFixed(1)}%</p>
+                            <div class="flex gap-1">
+                                <button onclick="downloadQuestDataCSV(${quest.id})" class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors" title="CSV 다운로드">
+                                    📥 CSV
+                                </button>
+                                <button onclick="downloadQuestDataJSON(${quest.id})" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors" title="JSON 다운로드">
+                                    📥 JSON
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
@@ -1394,6 +1404,76 @@
             
             const timestamp = new Date().toISOString().split('T')[0];
             downloadJSON(data, `puzzle-guardians-quest-stats-${timestamp}.json`);
+        }
+
+        // 개별 퀘스트 CSV 다운로드
+        function downloadQuestDataCSV(questId) {
+            const quest = QUESTS.find(q => q.id === questId);
+            if (!quest) return;
+            
+            const questTransactions = allTransactions.filter(tx => tx.quest && tx.quest.id === questId);
+            
+            const headers = ['날짜', '시간', '수신자 주소', '보상액 (BORA)', '트랜잭션 해시', '블록 번호'];
+            const rows = [headers.join(',')];
+            
+            questTransactions.forEach(tx => {
+                const date = new Date(tx.timestamp);
+                const dateStr = date.toLocaleDateString('ko-KR');
+                const timeStr = date.toLocaleTimeString('ko-KR');
+                const row = [
+                    dateStr,
+                    timeStr,
+                    tx.to,
+                    tx.amount,
+                    tx.txHash,
+                    tx.blockNumber
+                ].join(',');
+                rows.push(row);
+            });
+            
+            const timestamp = new Date().toISOString().split('T')[0];
+            const questName = quest.name.replace(/[^\w가-힣]/g, '-');
+            downloadCSV(rows, `quest-${questId}-${questName}-${timestamp}.csv`);
+        }
+
+        // 개별 퀘스트 JSON 다운로드
+        function downloadQuestDataJSON(questId) {
+            const quest = QUESTS.find(q => q.id === questId);
+            if (!quest) return;
+            
+            const questTransactions = allTransactions.filter(tx => tx.quest && tx.quest.id === questId);
+            const stats = questStatsData[questId];
+            
+            const data = {
+                quest: {
+                    id: quest.id,
+                    name: quest.name,
+                    description: quest.description,
+                    reward: quest.reward,
+                    token: quest.token,
+                    startDate: quest.startDate.toISOString(),
+                    endDate: quest.endDate.toISOString(),
+                    status: getQuestStatus(quest),
+                    category: quest.category || 'regular'
+                },
+                statistics: {
+                    totalClaims: stats.claims,
+                    uniqueUsers: stats.users.size,
+                    totalPaid: stats.totalPaid
+                },
+                transactions: questTransactions.map(tx => ({
+                    date: new Date(tx.timestamp).toISOString(),
+                    toAddress: tx.to,
+                    amount: tx.amount,
+                    token: tx.token,
+                    txHash: tx.txHash,
+                    blockNumber: tx.blockNumber
+                }))
+            };
+            
+            const timestamp = new Date().toISOString().split('T')[0];
+            const questName = quest.name.replace(/[^\w가-힣]/g, '-');
+            downloadJSON(data, `quest-${questId}-${questName}-${timestamp}.json`);
         }
 
         // 초기화
