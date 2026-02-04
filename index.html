@@ -121,7 +121,7 @@
         </div>
 
         <!-- 전체 통계 -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <div class="stat-card">
                 <p class="text-sm opacity-90 mb-1">💰 지갑 잔액</p>
                 <p class="text-3xl font-bold" id="totalBalance">로딩중...</p>
@@ -136,6 +136,11 @@
                 <p class="text-sm opacity-90 mb-1">👥 참여 유저</p>
                 <p class="text-3xl font-bold" id="uniqueUsers">0</p>
                 <p class="text-xs opacity-75 mt-1">명</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <p class="text-sm opacity-90 mb-1">📈 유저당 평균</p>
+                <p class="text-3xl font-bold" id="avgClaimsPerUser">0</p>
+                <p class="text-xs opacity-75 mt-1">클레임/유저</p>
             </div>
             <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                 <p class="text-sm opacity-90 mb-1">💸 총 지급액</p>
@@ -605,6 +610,10 @@
                 const uniqueUsers = new Set(allTransactions.map(tx => tx.to)).size;
                 document.getElementById('uniqueUsers').textContent = uniqueUsers.toLocaleString();
                 
+                // 유저당 평균 클레임 횟수
+                const avgClaimsPerUser = uniqueUsers > 0 ? (allTransactions.length / uniqueUsers) : 0;
+                document.getElementById('avgClaimsPerUser').textContent = avgClaimsPerUser.toFixed(1);
+                
                 document.getElementById('totalPaid').textContent = totalPaid.toLocaleString(undefined, {maximumFractionDigits: 2});
 
                 // 퀘스트별 상세 현황
@@ -634,23 +643,38 @@
         // 퀘스트 목록 업데이트
         function updateQuestList() {
             const questStats = {};
+            const allUsersEver = new Set(); // 전체 퀘스트 참여 유저
             
             QUESTS.forEach(quest => {
                 questStats[quest.id] = {
                     quest: quest,
                     claims: 0,
                     users: new Set(),
-                    totalPaid: 0
+                    totalPaid: 0,
+                    returningUsers: 0 // 재방문 유저 (다른 퀘스트 경험자)
                 };
             });
             
-            allTransactions.forEach(tx => {
-                if (tx.quest) {
-                    const stats = questStats[tx.quest.id];
+            // 퀘스트 ID 순서대로 처리하여 이전 퀘스트 참여자 추적
+            const sortedQuests = QUESTS.sort((a, b) => a.id - b.id);
+            
+            sortedQuests.forEach(quest => {
+                const questTransactions = allTransactions.filter(tx => tx.quest && tx.quest.id === quest.id);
+                const stats = questStats[quest.id];
+                
+                questTransactions.forEach(tx => {
                     stats.claims++;
                     stats.users.add(tx.to);
                     stats.totalPaid += tx.amount;
-                }
+                    
+                    // 이 유저가 이전에 다른 퀘스트를 한 적이 있는지 확인
+                    if (allUsersEver.has(tx.to)) {
+                        stats.returningUsers++;
+                    }
+                });
+                
+                // 이 퀘스트의 유저들을 전체 유저에 추가
+                stats.users.forEach(user => allUsersEver.add(user));
             });
 
             questStatsData = questStats;
@@ -977,6 +1001,8 @@
                 const cardClass = status === 'active' ? 'quest-active' : status === 'ended' ? 'quest-ended' : 'quest-upcoming';
                 
                 const progress = stats.claims > 0 ? Math.min(100, (stats.claims / 100) * 100) : 0;
+                const avgClaimsPerUser = stats.users.size > 0 ? (stats.claims / stats.users.size) : 0;
+                const returningRate = stats.claims > 0 ? (stats.returningUsers / stats.claims * 100) : 0;
 
                 html += `
                     <div class="quest-card ${cardClass} mb-4">
@@ -997,7 +1023,7 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-3 gap-4 mb-3">
+                        <div class="grid grid-cols-4 gap-4 mb-3">
                             <div class="bg-gray-50 p-3 rounded-lg">
                                 <p class="text-xs text-gray-600 mb-1">클레임 수</p>
                                 <p class="text-xl font-bold text-gray-800">${stats.claims.toLocaleString()}</p>
@@ -1005,6 +1031,10 @@
                             <div class="bg-gray-50 p-3 rounded-lg">
                                 <p class="text-xs text-gray-600 mb-1">참여 유저</p>
                                 <p class="text-xl font-bold text-gray-800">${stats.users.size.toLocaleString()}</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-xs text-gray-600 mb-1">유저당 평균</p>
+                                <p class="text-xl font-bold text-blue-600">${(stats.claims / stats.users.size).toFixed(1)}</p>
                             </div>
                             <div class="bg-gray-50 p-3 rounded-lg">
                                 <p class="text-xs text-gray-600 mb-1">총 지급액</p>
@@ -1016,7 +1046,10 @@
                             <div class="progress-fill" style="width: ${progress}%"></div>
                         </div>
                         <div class="flex items-center justify-between mt-2">
-                            <p class="text-xs text-gray-500">활동률: ${progress.toFixed(1)}%</p>
+                            <div class="flex items-center gap-4">
+                                <p class="text-xs text-gray-500">활동률: ${progress.toFixed(1)}%</p>
+                                <p class="text-xs text-blue-600 font-semibold" title="다른 퀘스트 경험자 비율">🔄 재방문율: ${returningRate.toFixed(1)}%</p>
+                            </div>
                             <div class="flex gap-1">
                                 <button onclick="downloadQuestDataCSV(${quest.id})" class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors" title="CSV 다운로드">
                                     📥 CSV
