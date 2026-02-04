@@ -643,7 +643,6 @@
         // 퀘스트 목록 업데이트
         function updateQuestList() {
             const questStats = {};
-            const allUsersEver = new Set(); // 전체 퀘스트 참여 유저
             
             QUESTS.forEach(quest => {
                 questStats[quest.id] = {
@@ -651,31 +650,122 @@
                     claims: 0,
                     users: new Set(),
                     totalPaid: 0,
-                    returningUsers: 0 // 재방문 유저 (다른 퀘스트 경험자)
+                    returningUsers: 0, // 기존 유저
+                    showReturningRate: false // 재방문율 표시 여부
                 };
             });
             
-            // 퀘스트 ID 순서대로 처리하여 이전 퀘스트 참여자 추적
-            const sortedQuests = QUESTS.sort((a, b) => a.id - b.id);
-            
-            sortedQuests.forEach(quest => {
-                const questTransactions = allTransactions.filter(tx => tx.quest && tx.quest.id === quest.id);
-                const stats = questStats[quest.id];
-                
-                questTransactions.forEach(tx => {
+            // 모든 트랜잭션 처리
+            allTransactions.forEach(tx => {
+                if (tx.quest) {
+                    const stats = questStats[tx.quest.id];
                     stats.claims++;
                     stats.users.add(tx.to);
                     stats.totalPaid += tx.amount;
-                    
-                    // 이 유저가 이전에 다른 퀘스트를 한 적이 있는지 확인
-                    if (allUsersEver.has(tx.to)) {
-                        stats.returningUsers++;
+                }
+            });
+            
+            // 퀘스트 10 (레벨3+스타터팩): 퀘스트 1~9 경험자 비율
+            if (questStats[10]) {
+                const quest10Users = questStats[10].users;
+                const previousQuestUsers = new Set();
+                
+                // 퀘스트 1~9의 모든 유저 수집
+                for (let i = 1; i <= 9; i++) {
+                    if (questStats[i]) {
+                        questStats[i].users.forEach(user => previousQuestUsers.add(user));
+                    }
+                }
+                
+                // 퀘스트 10 참여자 중 이전 퀘스트 경험자 수
+                let returningCount = 0;
+                quest10Users.forEach(user => {
+                    if (previousQuestUsers.has(user)) {
+                        returningCount++;
                     }
                 });
                 
-                // 이 퀘스트의 유저들을 전체 유저에 추가
-                stats.users.forEach(user => allUsersEver.add(user));
-            });
+                questStats[10].returningUsers = returningCount;
+                questStats[10].showReturningRate = true;
+            }
+            
+            // 이벤트 리그 2: 이벤트 리그 1 경험자 비율
+            const event2Quests = QUESTS.filter(q => q.id >= 201 && q.id < 300);
+            if (event2Quests.length > 0) {
+                const event1Users = new Set();
+                const event2Users = new Set();
+                
+                // 이벤트 리그 1 유저 수집
+                QUESTS.filter(q => q.id >= 101 && q.id < 200).forEach(quest => {
+                    if (questStats[quest.id]) {
+                        questStats[quest.id].users.forEach(user => event1Users.add(user));
+                    }
+                });
+                
+                // 이벤트 리그 2 유저 수집 및 카운트
+                event2Quests.forEach(quest => {
+                    if (questStats[quest.id]) {
+                        questStats[quest.id].users.forEach(user => event2Users.add(user));
+                    }
+                });
+                
+                // 이벤트 리그 2 참여자 중 이벤트 1 경험자
+                let event2Returning = 0;
+                event2Users.forEach(user => {
+                    if (event1Users.has(user)) {
+                        event2Returning++;
+                    }
+                });
+                
+                // 각 퀘스트에 통계 적용 (그룹 단위로)
+                event2Quests.forEach(quest => {
+                    if (questStats[quest.id]) {
+                        questStats[quest.id].returningUsers = event2Returning;
+                        questStats[quest.id].totalEventUsers = event2Users.size;
+                        questStats[quest.id].showReturningRate = true;
+                        questStats[quest.id].isEventGroup = true;
+                    }
+                });
+            }
+            
+            // 이벤트 리그 3: 이벤트 리그 1 or 2 경험자 비율
+            const event3Quests = QUESTS.filter(q => q.id >= 301 && q.id < 400);
+            if (event3Quests.length > 0) {
+                const event12Users = new Set();
+                const event3Users = new Set();
+                
+                // 이벤트 리그 1, 2 유저 수집
+                QUESTS.filter(q => (q.id >= 101 && q.id < 200) || (q.id >= 201 && q.id < 300)).forEach(quest => {
+                    if (questStats[quest.id]) {
+                        questStats[quest.id].users.forEach(user => event12Users.add(user));
+                    }
+                });
+                
+                // 이벤트 리그 3 유저 수집
+                event3Quests.forEach(quest => {
+                    if (questStats[quest.id]) {
+                        questStats[quest.id].users.forEach(user => event3Users.add(user));
+                    }
+                });
+                
+                // 이벤트 리그 3 참여자 중 이벤트 1,2 경험자
+                let event3Returning = 0;
+                event3Users.forEach(user => {
+                    if (event12Users.has(user)) {
+                        event3Returning++;
+                    }
+                });
+                
+                // 각 퀘스트에 통계 적용
+                event3Quests.forEach(quest => {
+                    if (questStats[quest.id]) {
+                        questStats[quest.id].returningUsers = event3Returning;
+                        questStats[quest.id].totalEventUsers = event3Users.size;
+                        questStats[quest.id].showReturningRate = true;
+                        questStats[quest.id].isEventGroup = true;
+                    }
+                });
+            }
 
             questStatsData = questStats;
             renderQuestList();
@@ -1002,7 +1092,28 @@
                 
                 const progress = stats.claims > 0 ? Math.min(100, (stats.claims / 100) * 100) : 0;
                 const avgClaimsPerUser = stats.users.size > 0 ? (stats.claims / stats.users.size) : 0;
-                const returningRate = stats.claims > 0 ? (stats.returningUsers / stats.claims * 100) : 0;
+                
+                // 재방문율 계산 (표시해야 하는 경우만)
+                let returningRate = 0;
+                let returningRateHtml = '';
+                if (stats.showReturningRate) {
+                    const totalUsers = stats.isEventGroup ? stats.totalEventUsers : stats.users.size;
+                    returningRate = totalUsers > 0 ? (stats.returningUsers / totalUsers * 100) : 0;
+                    const newUsers = totalUsers - stats.returningUsers;
+                    
+                    let tooltip = '';
+                    if (quest.id === 10) {
+                        tooltip = `이전 퀘스트(1-9) 경험자: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
+                    } else if (stats.isEventGroup && quest.id >= 201 && quest.id < 300) {
+                        tooltip = `이벤트 리그 1 경험자: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
+                    } else if (stats.isEventGroup && quest.id >= 301) {
+                        tooltip = `이벤트 리그 1,2 경험자: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
+                    }
+                    
+                    returningRateHtml = `<p class="text-xs ${returningRate >= 50 ? 'text-green-600' : 'text-orange-600'} font-semibold" title="${tooltip}">
+                        🔄 기존 유저: ${returningRate.toFixed(1)}%
+                    </p>`;
+                }
 
                 html += `
                     <div class="quest-card ${cardClass} mb-4">
@@ -1048,7 +1159,7 @@
                         <div class="flex items-center justify-between mt-2">
                             <div class="flex items-center gap-4">
                                 <p class="text-xs text-gray-500">활동률: ${progress.toFixed(1)}%</p>
-                                <p class="text-xs text-blue-600 font-semibold" title="다른 퀘스트 경험자 비율">🔄 재방문율: ${returningRate.toFixed(1)}%</p>
+                                ${returningRateHtml}
                             </div>
                             <div class="flex gap-1">
                                 <button onclick="downloadQuestDataCSV(${quest.id})" class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors" title="CSV 다운로드">
