@@ -297,6 +297,12 @@
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-bold text-gray-800">🕒 최근 클레임 내역</h2>
                 <div class="flex gap-2">
+                    <select id="transactionQuestFilter" onchange="filterTransactions()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="all">전체 퀘스트</option>
+                        <option value="regular">일반 퀘스트만</option>
+                        <option value="event">이벤트 리그만</option>
+                        <!-- 개별 퀘스트는 JS로 추가 -->
+                    </select>
                     <button onclick="downloadTransactionsCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm">
                         📥 CSV 다운로드
                     </button>
@@ -448,6 +454,7 @@
 
         let currentPage = 1;
         let allTransactions = [];
+        let filteredTransactions = []; // 필터링된 트랜잭션
         let questStatsData = {};
         let dailyClaimsChart, questDistributionChart;
 
@@ -605,6 +612,10 @@
                 
                 // 차트 생성
                 createCharts();
+                
+                // 필터 초기화
+                filteredTransactions = [...allTransactions];
+                populateQuestFilter();
                 
                 // 트랜잭션 목록 표시
                 displayTransactions();
@@ -1266,7 +1277,7 @@
             const itemsPerPage = 20;
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
-            const pageTransactions = allTransactions.slice(start, end);
+            const pageTransactions = filteredTransactions.slice(start, end);
 
             if (pageTransactions.length === 0) {
                 document.getElementById('transactionList').innerHTML = `
@@ -1276,6 +1287,8 @@
                         </td>
                     </tr>
                 `;
+                document.getElementById('currentPage').textContent = '0';
+                document.getElementById('totalPages').textContent = '0';
                 return;
             }
 
@@ -1308,9 +1321,76 @@
 
             document.getElementById('transactionList').innerHTML = html;
             document.getElementById('currentPage').textContent = currentPage;
+            const totalPages = Math.ceil(filteredTransactions.length / 20);
+            document.getElementById('totalPages').textContent = totalPages || 1;
             
             document.getElementById('prevPage').disabled = currentPage === 1;
-            document.getElementById('nextPage').disabled = end >= allTransactions.length;
+            document.getElementById('nextPage').disabled = end >= filteredTransactions.length;
+        }
+
+        // 트랜잭션 필터링
+        function filterTransactions() {
+            const filterValue = document.getElementById('transactionQuestFilter').value;
+            
+            if (filterValue === 'all') {
+                filteredTransactions = [...allTransactions];
+            } else if (filterValue === 'regular') {
+                filteredTransactions = allTransactions.filter(tx => 
+                    tx.quest && !tx.quest.category
+                );
+            } else if (filterValue === 'event') {
+                filteredTransactions = allTransactions.filter(tx => 
+                    tx.quest && tx.quest.category === 'event'
+                );
+            } else if (filterValue.startsWith('event-')) {
+                // 이벤트 리그별 필터
+                const eventRound = parseInt(filterValue.split('-')[1]);
+                filteredTransactions = allTransactions.filter(tx => {
+                    if (!tx.quest || tx.quest.category !== 'event') return false;
+                    if (eventRound === 1) return tx.quest.id >= 101 && tx.quest.id < 200;
+                    if (eventRound === 2) return tx.quest.id >= 201 && tx.quest.id < 300;
+                    if (eventRound === 3) return tx.quest.id >= 301 && tx.quest.id < 400;
+                    return false;
+                });
+            } else {
+                // 개별 퀘스트 필터
+                const questId = parseInt(filterValue);
+                filteredTransactions = allTransactions.filter(tx => 
+                    tx.quest && tx.quest.id === questId
+                );
+            }
+            
+            currentPage = 1;
+            displayTransactions();
+        }
+
+        // 필터 옵션 채우기
+        function populateQuestFilter() {
+            const select = document.getElementById('transactionQuestFilter');
+            
+            // 이벤트 리그 옵션 추가
+            const eventOption1 = document.createElement('optgroup');
+            eventOption1.label = '이벤트 리그';
+            eventOption1.innerHTML = `
+                <option value="event-1">이벤트 리그 1</option>
+                <option value="event-2">이벤트 리그 2</option>
+                <option value="event-3">이벤트 리그 3</option>
+            `;
+            select.appendChild(eventOption1);
+            
+            // 일반 퀘스트 옵션 추가
+            const regularQuests = QUESTS.filter(q => !q.category);
+            if (regularQuests.length > 0) {
+                const regularGroup = document.createElement('optgroup');
+                regularGroup.label = '일반 퀘스트';
+                regularQuests.forEach(quest => {
+                    const option = document.createElement('option');
+                    option.value = quest.id;
+                    option.textContent = `Q${quest.id}: ${quest.name}`;
+                    regularGroup.appendChild(option);
+                });
+                select.appendChild(regularGroup);
+            }
         }
 
         // 페이지네이션
@@ -1322,7 +1402,7 @@
         });
 
         document.getElementById('nextPage').addEventListener('click', () => {
-            if (currentPage * 20 < allTransactions.length) {
+            if (currentPage * 20 < filteredTransactions.length) {
                 currentPage++;
                 displayTransactions();
             }
