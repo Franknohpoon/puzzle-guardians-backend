@@ -121,7 +121,7 @@
         </div>
 
         <!-- 전체 통계 -->
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="stat-card">
                 <p class="text-sm opacity-90 mb-1">💰 지갑 잔액</p>
                 <p class="text-3xl font-bold" id="totalBalance">로딩중...</p>
@@ -136,11 +136,6 @@
                 <p class="text-sm opacity-90 mb-1">👥 참여 유저</p>
                 <p class="text-3xl font-bold" id="uniqueUsers">0</p>
                 <p class="text-xs opacity-75 mt-1">명</p>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                <p class="text-sm opacity-90 mb-1">📈 유저당 평균</p>
-                <p class="text-3xl font-bold" id="avgClaimsPerUser">0</p>
-                <p class="text-xs opacity-75 mt-1">클레임/유저</p>
             </div>
             <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                 <p class="text-sm opacity-90 mb-1">💸 총 지급액</p>
@@ -617,10 +612,6 @@
                 
                 const uniqueUsers = new Set(allTransactions.map(tx => tx.to)).size;
                 document.getElementById('uniqueUsers').textContent = uniqueUsers.toLocaleString();
-                
-                // 유저당 평균 클레임 횟수
-                const avgClaimsPerUser = uniqueUsers > 0 ? (allTransactions.length / uniqueUsers) : 0;
-                document.getElementById('avgClaimsPerUser').textContent = avgClaimsPerUser.toFixed(1);
                 
                 document.getElementById('totalPaid').textContent = totalPaid.toLocaleString(undefined, {maximumFractionDigits: 2});
 
@@ -1111,14 +1102,14 @@
                     
                     let tooltip = '';
                     if (quest.id === 10) {
-                        tooltip = `이전 퀘스트(1-9) 경험자: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
+                        tooltip = `이전 퀘스트(1-9)에서 클레임한 적 있는 유저 비율\n기존: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
                     } else if (stats.isEventGroup && quest.id >= 201 && quest.id < 300) {
-                        tooltip = `이벤트 리그 1 경험자: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
+                        tooltip = `이벤트 리그 1에서 클레임한 적 있는 유저 비율\n기존: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
                     } else if (stats.isEventGroup && quest.id >= 301) {
-                        tooltip = `이벤트 리그 1,2 경험자: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
+                        tooltip = `이벤트 리그 1 또는 2에서 클레임한 적 있는 유저 비율\n기존: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
                     }
                     
-                    returningRateHtml = `<p class="text-xs ${returningRate >= 50 ? 'text-green-600' : 'text-orange-600'} font-semibold" title="${tooltip}">
+                    returningRateHtml = `<p class="text-xs ${returningRate >= 50 ? 'text-green-600' : 'text-orange-600'} font-semibold" title="${tooltip}" style="cursor: help;">
                         🔄 기존 유저: ${returningRate.toFixed(1)}%
                     </p>`;
                 }
@@ -1166,7 +1157,7 @@
                         </div>
                         <div class="flex items-center justify-between mt-2">
                             <div class="flex items-center gap-4">
-                                <p class="text-xs text-gray-500">활동률: ${progress.toFixed(1)}%</p>
+                                <p class="text-xs text-gray-500" title="클레임 수를 기준으로 한 참여도 지표">📊 활동률: ${progress.toFixed(1)}%</p>
                                 ${returningRateHtml}
                             </div>
                             <div class="flex gap-1">
