@@ -1169,8 +1169,13 @@
             const questDistribution = {};
             allTransactions.forEach(tx => {
                 if (tx.quest) {
-                    const key = `Q${tx.quest.id}`;
-                    questDistribution[key] = (questDistribution[key] || 0) + 1;
+                    // 퀘스트 이름 사용 (짧게)
+                    let questLabel = tx.quest.name;
+                    // 이름이 너무 길면 줄임
+                    if (questLabel.length > 15) {
+                        questLabel = questLabel.substring(0, 15) + '...';
+                    }
+                    questDistribution[questLabel] = (questDistribution[questLabel] || 0) + 1;
                 }
             });
 
@@ -1200,11 +1205,38 @@
                     maintainAspectRatio: true,
                     plugins: {
                         legend: {
-                            position: 'bottom',
+                            position: 'right',
                             labels: {
                                 padding: 15,
                                 font: {
-                                    size: 11
+                                    size: 12
+                                },
+                                boxWidth: 15,
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map((label, i) => {
+                                            const value = data.datasets[0].data[i];
+                                            return {
+                                                text: `${label} (${value})`,
+                                                fillStyle: data.datasets[0].backgroundColor[i],
+                                                hidden: false,
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value}회 (${percentage}%)`;
                                 }
                             }
                         }
