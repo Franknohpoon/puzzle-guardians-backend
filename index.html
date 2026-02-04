@@ -588,19 +588,27 @@
                     updateLastUpdate(new Date());
                 }
                 
-                // 퀘스트 식별
-                allTransactions = allTransactions.map(tx => ({
-                    ...tx,
-                    quest: identifyQuest(tx)
-                })).sort((a, b) => b.timestamp - a.timestamp);
+                // 퀘스트 식별 및 관리 출금 제외
+                allTransactions = allTransactions
+                    .filter(tx => tx.amount !== 400000) // 400,000 BORA 관리 출금 제외
+                    .map(tx => ({
+                        ...tx,
+                        quest: identifyQuest(tx)
+                    }))
+                    .sort((a, b) => b.timestamp - a.timestamp);
 
                 // BORA 잔액 계산
                 const totalPaid = allTransactions.reduce((sum, tx) => sum + tx.amount, 0);
                 
-                // 역산한 정확한 초기 예산
-                // 현재 실제 잔액(191,879) + 실제 총 지급액(570,561) = 762,440
-                const ACTUAL_BUDGET = 762440;
-                const currentBalance = ACTUAL_BUDGET - totalPaid;
+                // 초기 예산 및 잔액 계산
+                // 초기 충전: 762,430 BORA
+                // 관리 출금: -400,000 BORA (지갑 관리상 출금, 퀘스트 무관)
+                // 중복 지급: +1,890 BORA (이벤트2 중복 지급)
+                // 퀘스트 지급: -totalPaid
+                const INITIAL_DEPOSIT = 762430;
+                const MANAGEMENT_WITHDRAWAL = 400000;
+                const DUPLICATE_PAYMENT = 1890;
+                const currentBalance = INITIAL_DEPOSIT - MANAGEMENT_WITHDRAWAL + DUPLICATE_PAYMENT - totalPaid;
                 
                 document.getElementById('totalBalance').textContent = currentBalance.toLocaleString(undefined, {maximumFractionDigits: 2});
                 
