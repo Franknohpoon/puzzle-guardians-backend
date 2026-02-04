@@ -1169,12 +1169,28 @@
             const questDistribution = {};
             allTransactions.forEach(tx => {
                 if (tx.quest) {
-                    // 퀘스트 이름 사용 (짧게)
-                    let questLabel = tx.quest.name;
-                    // 이름이 너무 길면 줄임
-                    if (questLabel.length > 15) {
-                        questLabel = questLabel.substring(0, 15) + '...';
+                    let questLabel;
+                    
+                    // 이벤트 리그는 하나로 그룹화
+                    if (tx.quest.category === 'event') {
+                        if (tx.quest.id >= 101 && tx.quest.id < 200) {
+                            questLabel = '이벤트 리그 1';
+                        } else if (tx.quest.id >= 201 && tx.quest.id < 300) {
+                            questLabel = '이벤트 리그 2';
+                        } else if (tx.quest.id >= 301 && tx.quest.id < 400) {
+                            questLabel = '이벤트 리그 3';
+                        } else {
+                            questLabel = tx.quest.name;
+                        }
+                    } else {
+                        // 일반 퀘스트는 이름 사용
+                        questLabel = tx.quest.name;
+                        // 이름이 너무 길면 줄임
+                        if (questLabel.length > 20) {
+                            questLabel = questLabel.substring(0, 20) + '...';
+                        }
                     }
+                    
                     questDistribution[questLabel] = (questDistribution[questLabel] || 0) + 1;
                 }
             });
