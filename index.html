@@ -1,120 +1,222 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puzzle&Guardians 퀘스트 대시보드</title>
+    <title>Puzzle&Guardians Quest Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #e5e5e5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+        
+        /* Paradigm-style gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Dark stat cards */
         .stat-card {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
-            border-radius: 1rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 0.75rem;
             padding: 1.5rem;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            backdrop-filter: blur(20px);
         }
         .stat-card:hover {
-            transform: translateY(-5px);
+            border-color: rgba(102, 126, 234, 0.6);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
         }
+        
+        /* Dark quest cards */
         .quest-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 0.75rem;
+            background: rgba(18, 18, 18, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
             padding: 1.25rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            border-left: 4px solid #667eea;
             transition: all 0.2s;
             backdrop-filter: blur(10px);
         }
         .quest-card:hover {
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-            transform: translateX(5px);
+            border-color: rgba(102, 126, 234, 0.5);
+            transform: translateX(4px);
         }
+        
         .quest-active {
-            border-left-color: #10b981;
-            background: linear-gradient(to right, #ecfdf5 0%, white 100%);
+            border-left: 3px solid #10b981;
         }
         .quest-ended {
-            border-left-color: #ef4444;
-            background: linear-gradient(to right, #fef2f2 0%, white 100%);
+            border-left: 3px solid #ef4444;
+            opacity: 0.7;
         }
         .quest-upcoming {
-            border-left-color: #f59e0b;
-            background: linear-gradient(to right, #fffbeb 0%, white 100%);
+            border-left: 3px solid #f59e0b;
         }
+        
+        /* Dark table */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        thead tr {
+            background: rgba(18, 18, 18, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        tbody tr {
+            background: rgba(10, 10, 10, 0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+        
+        tbody tr:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Dark inputs */
+        input, select {
+            background: rgba(18, 18, 18, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e5e5e5;
+        }
+        
+        input:focus, select:focus {
+            border-color: rgba(102, 126, 234, 0.6);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Dark buttons */
+        button {
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        /* Loading */
         .loading {
-            border: 3px solid #f3f3f3;
+            border: 3px solid rgba(255, 255, 255, 0.1);
             border-top: 3px solid #667eea;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
         }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
         @keyframes fade-in {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
         .animate-fade-in {
             animation: fade-in 0.3s ease-out;
         }
+        
+        /* Progress bar */
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+        
+        /* Status badges */
         .status-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 600;
+            border: 1px solid;
         }
-        .progress-bar {
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
             height: 8px;
-            background: #e5e7eb;
-            border-radius: 9999px;
-            overflow: hidden;
         }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.5s ease;
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(18, 18, 18, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.7);
         }
     </style>
 </head>
-<body class="bg-gray-50" style="background-image: url('https://raw.githubusercontent.com/Franknohpoon/puzzle-guardians-backend/main/background.png'); background-size: cover; background-attachment: fixed; background-position: center; background-repeat: no-repeat;">
+<body class="bg-black" style="background-image: url('https://raw.githubusercontent.com/Franknohpoon/puzzle-guardians-backend/main/background.png'); background-size: cover; background-attachment: fixed; background-position: center; background-repeat: no-repeat;">
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- 헤더 -->
         <div class="mb-8">
-            <div class="flex items-center justify-between mb-4 bg-white bg-opacity-90 backdrop-blur-md p-6 rounded-lg shadow-lg">
+            <div class="flex items-center justify-between mb-4 bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
                 <div>
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2" style="text-shadow: 2px 2px 4px rgba(255,255,255,0.8);">🎮 Puzzle&Guardians</h1>
-                    <p class="text-gray-800 font-semibold" style="text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">퀘스트 보상 클레임 현황 대시보드</p>
+                    <h1 class="text-4xl font-bold gradient-text mb-2">🎮 Puzzle & Guardians</h1>
+                    <p class="text-gray-400 font-medium">Quest Reward Dashboard</p>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="clearCache()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold">
-                        🗑️ 캐시 삭제
+                    <button onclick="clearCache()" class="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 border border-gray-700 transition-colors font-semibold">
+                        🗑️ Clear Cache
                     </button>
-                    <button onclick="refreshData()" class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold shadow-lg">
-                        🔄 새로고침
+                    <button onclick="refreshData()" class="px-6 py-3 btn-primary text-white rounded-lg font-semibold shadow-lg">
+                        🔄 Refresh
                     </button>
                 </div>
             </div>
-            <div class="bg-white bg-opacity-95 backdrop-blur-md p-4 rounded-lg shadow-sm border border-gray-200">
+            <div class="bg-black bg-opacity-80 backdrop-blur-xl p-4 rounded-lg border border-white border-opacity-10">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">보상 지갑 주소</p>
+                        <p class="text-sm text-gray-500 mb-1">Reward Wallet Address</p>
                         <a 
                             href="https://kaiascan.io/account/0x3156f02e943cefb0247283b7f89b4ebf91133cff" 
                             target="_blank"
-                            class="font-mono text-sm break-all text-purple-600 font-semibold hover:text-purple-800 hover:underline transition-colors">
+                            class="font-mono text-sm break-all text-purple-400 font-semibold hover:text-purple-300 hover:underline transition-colors">
                             0x3156f02e943cefb0247283b7f89b4ebf91133cff ↗
                         </a>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-gray-500">마지막 업데이트</p>
-                        <p class="text-sm font-semibold text-gray-700" id="lastUpdate">-</p>
+                        <p class="text-xs text-gray-500">Last Update</p>
+                        <p class="text-sm font-semibold text-gray-300" id="lastUpdate">-</p>
                     </div>
                 </div>
             </div>
@@ -123,74 +225,83 @@
         <!-- 전체 통계 -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="stat-card">
-                <p class="text-sm opacity-90 mb-1">💰 지갑 잔액</p>
-                <p class="text-3xl font-bold" id="totalBalance">로딩중...</p>
-                <p class="text-xs opacity-75 mt-1">BORA</p>
+                <p class="text-sm text-gray-400 mb-1">💰 Wallet Balance</p>
+                <p class="text-3xl font-bold text-white" id="totalBalance">Loading...</p>
+                <p class="text-xs text-gray-500 mt-1">BORA</p>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                <p class="text-sm opacity-90 mb-1">✅ 총 클레임</p>
-                <p class="text-3xl font-bold" id="totalClaims">0</p>
-                <p class="text-xs opacity-75 mt-1">건</p>
+            <div class="stat-card">
+                <p class="text-sm text-gray-400 mb-1">✅ Total Claims</p>
+                <p class="text-3xl font-bold text-white" id="totalClaims">0</p>
+                <p class="text-xs text-gray-500 mt-1">claims</p>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                <p class="text-sm opacity-90 mb-1">👥 참여 유저</p>
-                <p class="text-3xl font-bold" id="uniqueUsers">0</p>
-                <p class="text-xs opacity-75 mt-1">명</p>
+            <div class="stat-card">
+                <p class="text-sm text-gray-400 mb-1">👥 Unique Users</p>
+                <p class="text-3xl font-bold text-white" id="uniqueUsers">0</p>
+                <p class="text-xs text-gray-500 mt-1">users</p>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                <p class="text-sm opacity-90 mb-1">💸 총 지급액</p>
-                <p class="text-3xl font-bold" id="totalPaid">0</p>
-                <p class="text-xs opacity-75 mt-1">BORA</p>
+            <div class="stat-card">
+                <p class="text-sm text-gray-400 mb-1">💸 Total Paid</p>
+                <p class="text-3xl font-bold text-white" id="totalPaid">0</p>
+                <p class="text-xs text-gray-500 mt-1">BORA</p>
             </div>
         </div>
 
         <!-- 차트 섹션 -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">📊 일별 클레임 추이</h2>
+            <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-white">📊 Daily Claims Trend</h2>
+                    <select id="chartPeriodFilter" onchange="updateChart()" class="px-3 py-2 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="7">Last 7 Days</option>
+                        <option value="30" selected>Last 30 Days</option>
+                        <option value="60">Last 60 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
                 <canvas id="dailyClaimsChart"></canvas>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">🎯 퀘스트별 분포</h2>
+            <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
+                <h2 class="text-xl font-bold mb-4 text-white">🎯 Quest Distribution</h2>
                 <canvas id="questDistributionChart"></canvas>
             </div>
         </div>
 
         <!-- 유저 검색 섹션 -->
-        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
-            <h2 class="text-xl font-bold mb-4 text-gray-800">🔍 유저 검색</h2>
+        <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10 mb-8">
+            <h2 class="text-xl font-bold mb-4 text-white">🔍 User Search</h2>
             <div class="flex gap-3 mb-4">
                 <input 
                     type="text" 
                     id="userSearchInput" 
-                    placeholder="지갑 주소 입력 (0x...)" 
-                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Enter wallet address (0x...)" 
+                    class="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500"
                 />
                 <button 
                     onclick="searchUser()" 
-                    class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold">
-                    검색
+                    class="px-6 py-3 btn-primary text-white rounded-lg font-semibold">
+                    Search
                 </button>
                 <button 
                     onclick="clearSearch()" 
-                    class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-semibold">
-                    초기화
+                    class="px-6 py-3 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 border border-gray-700 transition-colors font-semibold">
+                    Clear
                 </button>
             </div>
             
             <!-- 검색 결과 -->
             <div id="userSearchResult" class="hidden">
                 <!-- 유저 요약 -->
-                <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg mb-4 border border-purple-200">
+                <div class="bg-gradient-to-r from-purple-900 from-opacity-30 to-blue-900 to-opacity-30 p-4 rounded-lg mb-4 border border-purple-500 border-opacity-30">
                     <!-- 지갑 주소 (전체 너비) -->
-                    <div class="mb-4 pb-3 border-b border-purple-200">
-                        <p class="text-xs text-gray-600 mb-1">지갑 주소</p>
+                    <div class="mb-4 pb-3 border-b border-purple-500 border-opacity-30">
+                        <p class="text-xs text-gray-400 mb-1">Wallet Address</p>
                         <div class="flex items-center gap-2">
-                            <p class="font-mono text-sm font-bold text-purple-700 break-all" id="searchedAddress">-</p>
+                            <p class="font-mono text-sm font-bold text-purple-400 break-all" id="searchedAddress">-</p>
                             <button 
                                 onclick="copySearchedAddress()" 
-                                class="text-gray-400 hover:text-purple-600 transition-colors flex-shrink-0"
-                                title="주소 복사">
+                                class="text-gray-500 hover:text-purple-400 transition-colors flex-shrink-0"
+                                title="Copy address">
                                 📋
                             </button>
                         </div>
@@ -199,30 +310,30 @@
                     <!-- 통계 (3컬럼) -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <p class="text-xs text-gray-600 mb-1">총 클레임</p>
-                            <p class="text-2xl font-bold text-purple-700" id="searchedClaimCount">0</p>
+                            <p class="text-xs text-gray-400 mb-1">Total Claims</p>
+                            <p class="text-2xl font-bold text-purple-400" id="searchedClaimCount">0</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-600 mb-1">총 수령액</p>
-                            <p class="text-2xl font-bold text-green-600" id="searchedTotalAmount">0 BORA</p>
+                            <p class="text-xs text-gray-400 mb-1">Total Amount</p>
+                            <p class="text-2xl font-bold text-green-400" id="searchedTotalAmount">0 BORA</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-600 mb-1">평균 금액</p>
-                            <p class="text-2xl font-bold text-blue-600" id="searchedAvgAmount">0 BORA</p>
+                            <p class="text-xs text-gray-400 mb-1">Average Amount</p>
+                            <p class="text-2xl font-bold text-blue-400" id="searchedAvgAmount">0 BORA</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 클레임 내역 -->
-                <h3 class="font-bold text-gray-800 mb-3">📋 클레임 내역</h3>
+                <h3 class="font-bold text-white mb-3">📋 Claim History</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="bg-gray-100 border-b-2 border-gray-300">
-                                <th class="text-left py-3 px-4 text-gray-700 font-semibold">날짜</th>
-                                <th class="text-left py-3 px-4 text-gray-700 font-semibold">퀘스트</th>
-                                <th class="text-right py-3 px-4 text-gray-700 font-semibold">금액</th>
-                                <th class="text-left py-3 px-4 text-gray-700 font-semibold">트랜잭션</th>
+                            <tr class="bg-gray-900 bg-opacity-50 border-b border-gray-700">
+                                <th class="text-left py-3 px-4 text-gray-400 font-semibold">Date</th>
+                                <th class="text-left py-3 px-4 text-gray-400 font-semibold">Quest</th>
+                                <th class="text-right py-3 px-4 text-gray-400 font-semibold">Amount</th>
+                                <th class="text-left py-3 px-4 text-gray-400 font-semibold">Transaction</th>
                             </tr>
                         </thead>
                         <tbody id="searchedTransactions">
@@ -233,109 +344,109 @@
             </div>
             
             <!-- 검색 결과 없음 -->
-            <div id="userSearchNoResult" class="hidden text-center py-8 text-gray-500">
-                <p class="text-lg mb-2">🔍 검색 결과가 없습니다</p>
-                <p class="text-sm">해당 지갑 주소의 클레임 내역이 없습니다.</p>
+            <div id="userSearchNoResult" class="hidden text-center py-8 text-gray-400">
+                <p class="text-lg mb-2">🔍 No results found</p>
+                <p class="text-sm">No claim history for this wallet address.</p>
             </div>
         </div>
 
         <!-- 유저 랭킹 섹션 -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- 최다 클레임 유저 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">🏆 최다 클레임 유저 Top 10</h2>
+            <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
+                <h2 class="text-xl font-bold mb-4 text-white">🏆 Top 10 Most Claims</h2>
                 <div id="topClaimUsers" class="space-y-3">
-                    <p class="text-center text-gray-500 py-4">데이터 로딩중...</p>
+                    <p class="text-center text-gray-400 py-4">Loading...</p>
                 </div>
             </div>
             
             <!-- 최다 금액 수령 유저 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">💰 최다 금액 수령 유저 Top 10</h2>
+            <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
+                <h2 class="text-xl font-bold mb-4 text-white">💰 Top 10 Highest Amount</h2>
                 <div id="topAmountUsers" class="space-y-3">
-                    <p class="text-center text-gray-500 py-4">데이터 로딩중...</p>
+                    <p class="text-center text-gray-400 py-4">Loading...</p>
                 </div>
             </div>
         </div>
 
         <!-- 퀘스트별 상세 현황 -->
-        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10 mb-8">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-gray-800">📋 퀘스트별 상세 현황</h2>
+                <h2 class="text-xl font-bold text-white">📋 Quest Details</h2>
                 <div class="flex gap-2">
                     <button onclick="downloadQuestStatsCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm">
-                        📥 CSV 다운로드
+                        📥 CSV
                     </button>
                     <button onclick="downloadQuestStatsJSON()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm">
-                        📥 JSON 다운로드
+                        📥 JSON
                     </button>
-                    <select id="questFilter" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option value="status-active">진행중만 보기</option>
-                        <option value="default">전체 보기</option>
-                        <option value="id-asc">퀘스트 번호순 (오름차순)</option>
-                        <option value="id-desc">퀘스트 번호순 (내림차순)</option>
-                        <option value="start-asc">시작일순 (빠른순)</option>
-                        <option value="start-desc">시작일순 (늦은순)</option>
-                        <option value="reward-asc">보상 규모순 (작은순)</option>
-                        <option value="reward-desc">보상 규모순 (큰순)</option>
-                        <option value="claims-desc">클레임 많은순</option>
-                        <option value="claims-asc">클레임 적은순</option>
-                        <option value="status-ended">종료된 것만 보기</option>
+                    <select id="questFilter" class="px-4 py-2 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="status-active">Active Only</option>
+                        <option value="default">All</option>
+                        <option value="id-asc">Quest ID ↑</option>
+                        <option value="id-desc">Quest ID ↓</option>
+                        <option value="start-asc">Start Date ↑</option>
+                        <option value="start-desc">Start Date ↓</option>
+                        <option value="reward-asc">Reward ↑</option>
+                        <option value="reward-desc">Reward ↓</option>
+                        <option value="claims-desc">Claims ↓</option>
+                        <option value="claims-asc">Claims ↑</option>
+                        <option value="status-ended">Ended Only</option>
                     </select>
                 </div>
             </div>
             <div id="questList" class="space-y-4">
                 <div class="text-center py-12">
                     <div class="loading mx-auto"></div>
-                    <p class="mt-4 text-gray-600">데이터 분석중...</p>
+                    <p class="mt-4 text-gray-400">Analyzing data...</p>
                 </div>
             </div>
         </div>
 
         <!-- 최근 클레임 내역 -->
-        <div class="bg-white p-6 rounded-lg shadow-lg">
+        <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold text-gray-800">🕒 최근 클레임 내역</h2>
+                <h2 class="text-xl font-bold text-white">🕒 Recent Claims</h2>
                 <div class="flex gap-2">
-                    <select id="transactionQuestFilter" onchange="filterTransactions()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option value="all">전체 퀘스트</option>
-                        <option value="regular">일반 퀘스트만</option>
-                        <option value="event">이벤트 리그만</option>
+                    <select id="transactionQuestFilter" onchange="filterTransactions()" class="px-4 py-2 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="all">All Quests</option>
+                        <option value="regular">Regular Only</option>
+                        <option value="event">Event League Only</option>
                         <!-- 개별 퀘스트는 JS로 추가 -->
                     </select>
                     <button onclick="downloadTransactionsCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm">
-                        📥 CSV 다운로드
+                        📥 CSV
                     </button>
                     <button onclick="downloadTransactionsJSON()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm">
-                        📥 JSON 다운로드
+                        📥 JSON
                     </button>
                 </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b-2 border-gray-200 bg-gray-50">
-                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">시간</th>
-                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">퀘스트</th>
-                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">수신자</th>
-                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-700">보상액</th>
-                            <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">트랜잭션</th>
+                        <tr class="border-b border-gray-700 bg-gray-900 bg-opacity-50">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Time</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Quest</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Recipient</th>
+                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-400">Reward</th>
+                            <th class="text-center py-3 px-4 text-sm font-semibold text-gray-400">Transaction</th>
                         </tr>
                     </thead>
                     <tbody id="transactionList">
                         <tr>
                             <td colspan="5" class="text-center py-8">
                                 <div class="loading mx-auto"></div>
-                                <p class="mt-4 text-gray-600">트랜잭션 로딩중...</p>
+                                <p class="mt-4 text-gray-400">Loading transactions...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="mt-4 flex justify-between items-center">
-                <button id="prevPage" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors" disabled>← 이전</button>
-                <span class="text-gray-600 font-semibold">페이지 <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
-                <button id="nextPage" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">다음 →</button>
+                <button id="prevPage" class="px-4 py-2 btn-primary text-white rounded-lg disabled:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 transition-colors" disabled>← Prev</button>
+                <span class="text-gray-400 font-semibold">Page <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+                <button id="nextPage" class="px-4 py-2 btn-primary text-white rounded-lg transition-colors">Next →</button>
             </div>
         </div>
     </div>
@@ -817,37 +928,37 @@
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
                 
                 return `
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="flex items-center justify-between p-3 bg-gray-900 bg-opacity-40 rounded-lg hover:bg-opacity-60 border border-gray-800 transition-colors">
                         <div class="flex items-center gap-3">
-                            <span class="text-lg font-bold ${index < 3 ? 'text-2xl' : ''}">${medal}</span>
+                            <span class="text-lg font-bold ${index < 3 ? 'text-2xl' : ''} text-gray-300">${medal}</span>
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <p class="font-mono text-sm font-semibold text-gray-800">${shortAddress}</p>
+                                    <p class="font-mono text-sm font-semibold text-gray-200">${shortAddress}</p>
                                     <button 
                                         onclick="copyAddress('${user.address}')" 
-                                        class="text-gray-400 hover:text-purple-600 transition-colors"
-                                        title="주소 복사">
+                                        class="text-gray-500 hover:text-purple-400 transition-colors"
+                                        title="Copy address">
                                         📋
                                     </button>
                                     <button 
                                         onclick="searchUserByAddress('${user.address}')" 
-                                        class="text-gray-400 hover:text-blue-600 transition-colors"
-                                        title="상세 보기">
+                                        class="text-gray-500 hover:text-blue-400 transition-colors"
+                                        title="View details">
                                         🔍
                                     </button>
                                 </div>
-                                <p class="text-xs text-gray-500">평균 ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})} BORA</p>
+                                <p class="text-xs text-gray-500">Avg ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})} BORA</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-lg font-bold text-purple-600">${user.claimCount}회</p>
+                            <p class="text-lg font-bold text-purple-400">${user.claimCount} claims</p>
                             <p class="text-xs text-gray-500">${user.totalAmount.toLocaleString()} BORA</p>
                         </div>
                     </div>
                 `;
             }).join('');
             
-            document.getElementById('topClaimUsers').innerHTML = html || '<p class="text-center text-gray-500 py-4">데이터가 없습니다.</p>';
+            document.getElementById('topClaimUsers').innerHTML = html || '<p class="text-center text-gray-400 py-4">No data available.</p>';
         }
         
         // 최다 금액 수령 유저 렌더링
@@ -858,37 +969,37 @@
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
                 
                 return `
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="flex items-center justify-between p-3 bg-gray-900 bg-opacity-40 rounded-lg hover:bg-opacity-60 border border-gray-800 transition-colors">
                         <div class="flex items-center gap-3">
-                            <span class="text-lg font-bold ${index < 3 ? 'text-2xl' : ''}">${medal}</span>
+                            <span class="text-lg font-bold ${index < 3 ? 'text-2xl' : ''} text-gray-300">${medal}</span>
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <p class="font-mono text-sm font-semibold text-gray-800">${shortAddress}</p>
+                                    <p class="font-mono text-sm font-semibold text-gray-200">${shortAddress}</p>
                                     <button 
                                         onclick="copyAddress('${user.address}')" 
-                                        class="text-gray-400 hover:text-purple-600 transition-colors"
-                                        title="주소 복사">
+                                        class="text-gray-500 hover:text-purple-400 transition-colors"
+                                        title="Copy address">
                                         📋
                                     </button>
                                     <button 
                                         onclick="searchUserByAddress('${user.address}')" 
-                                        class="text-gray-400 hover:text-blue-600 transition-colors"
-                                        title="상세 보기">
+                                        class="text-gray-500 hover:text-blue-400 transition-colors"
+                                        title="View details">
                                         🔍
                                     </button>
                                 </div>
-                                <p class="text-xs text-gray-500">${user.claimCount}회 클레임</p>
+                                <p class="text-xs text-gray-500">${user.claimCount} claims</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-lg font-bold text-green-600">${user.totalAmount.toLocaleString()} BORA</p>
-                            <p class="text-xs text-gray-500">평균 ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})}</p>
+                            <p class="text-lg font-bold text-green-400">${user.totalAmount.toLocaleString()} BORA</p>
+                            <p class="text-xs text-gray-500">Avg ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})}</p>
                         </div>
                     </div>
                 `;
             }).join('');
             
-            document.getElementById('topAmountUsers').innerHTML = html || '<p class="text-center text-gray-500 py-4">데이터가 없습니다.</p>';
+            document.getElementById('topAmountUsers').innerHTML = html || '<p class="text-center text-gray-400 py-4">No data available.</p>';
         }
 
         // 유저 검색
@@ -932,16 +1043,16 @@
                     const explorerUrl = `https://kaiascan.io/tx/${tx.txHash}`;
                     
                     return `
-                        <tr class="border-b border-gray-200 hover:bg-gray-50">
-                            <td class="py-3 px-4 text-gray-700">${date}</td>
+                        <tr class="border-b border-gray-800 hover:bg-gray-900 hover:bg-opacity-30">
+                            <td class="py-3 px-4 text-gray-300">${date}</td>
                             <td class="py-3 px-4">
-                                <span class="inline-block px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-semibold">
+                                <span class="inline-block px-2 py-1 bg-purple-900 bg-opacity-50 text-purple-300 border border-purple-700 rounded text-xs font-semibold">
                                     ${questName}
                                 </span>
                             </td>
-                            <td class="py-3 px-4 text-right font-semibold text-green-600">${tx.amount.toLocaleString()} BORA</td>
+                            <td class="py-3 px-4 text-right font-semibold text-green-400">${tx.amount.toLocaleString()} BORA</td>
                             <td class="py-3 px-4">
-                                <a href="${explorerUrl}" target="_blank" class="text-blue-600 hover:text-blue-800 font-mono text-xs">
+                                <a href="${explorerUrl}" target="_blank" class="text-blue-400 hover:text-blue-300 font-mono text-xs">
                                     ${shortHash} ↗
                                 </a>
                             </td>
@@ -1079,13 +1190,13 @@
             let html = '';
 
             // 일반 퀘스트 렌더링
-            html += '<h2 class="text-2xl font-bold mb-4 text-gray-800">📊 일반 퀘스트</h2>';
+            html += '<h2 class="text-2xl font-bold mb-4 text-white">📊 Regular Quests</h2>';
             
             if (regularQuests.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8 mb-8">해당 조건의 퀘스트가 없습니다.</p>';
+                html += '<p class="text-center text-gray-400 py-8 mb-8">No quests match the criteria.</p>';
             } else {
                 regularQuests.forEach(({quest, stats, status}) => {
-                const statusText = status === 'active' ? '진행중' : status === 'ended' ? '종료' : '예정';
+                const statusText = status === 'active' ? 'Active' : status === 'ended' ? 'Ended' : 'Upcoming';
                 const statusClass = status === 'active' ? 'bg-green-500' : status === 'ended' ? 'bg-red-500' : 'bg-orange-500';
                 const cardClass = status === 'active' ? 'quest-active' : status === 'ended' ? 'quest-ended' : 'quest-upcoming';
                 
@@ -1109,8 +1220,8 @@
                         tooltip = `이벤트 리그 1 또는 2에서 클레임한 적 있는 유저 비율\n기존: ${stats.returningUsers}명 / 신규: ${newUsers}명`;
                     }
                     
-                    returningRateHtml = `<p class="text-xs ${returningRate >= 50 ? 'text-green-600' : 'text-orange-600'} font-semibold" title="${tooltip}" style="cursor: help;">
-                        🔄 기존 유저: ${returningRate.toFixed(1)}%
+                    returningRateHtml = `<p class="text-xs ${returningRate >= 50 ? 'text-green-400' : 'text-orange-400'} font-semibold" title="${tooltip}" style="cursor: help;">
+                        🔄 Returning: ${returningRate.toFixed(1)}%
                     </p>`;
                 }
 
@@ -1119,36 +1230,36 @@
                         <div class="flex items-start justify-between mb-3">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <h3 class="font-bold text-lg text-gray-800">퀘스트 ${quest.id}: ${quest.name}</h3>
+                                    <h3 class="font-bold text-lg text-white">Quest ${quest.id}: ${quest.name}</h3>
                                     <span class="status-badge ${statusClass} text-white">${statusText}</span>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-2">${quest.description}</p>
+                                <p class="text-sm text-gray-400 mb-2">${quest.description}</p>
                                 <p class="text-xs text-gray-500">
                                     📅 ${quest.startDate.toLocaleDateString('ko-KR')} ~ ${quest.endDate.toLocaleDateString('ko-KR')}
                                 </p>
                             </div>
                             <div class="text-right">
-                                <p class="text-2xl font-bold text-purple-600">${quest.reward} ${quest.token}</p>
-                                <p class="text-xs text-gray-500">보상</p>
+                                <p class="text-2xl font-bold text-purple-400">${quest.reward} ${quest.token}</p>
+                                <p class="text-xs text-gray-500">Reward</p>
                             </div>
                         </div>
                         
                         <div class="grid grid-cols-4 gap-4 mb-3">
-                            <div class="bg-gray-50 p-3 rounded-lg">
-                                <p class="text-xs text-gray-600 mb-1">클레임 수</p>
-                                <p class="text-xl font-bold text-gray-800">${stats.claims.toLocaleString()}</p>
+                            <div class="bg-gray-900 bg-opacity-40 p-3 rounded-lg border border-gray-800">
+                                <p class="text-xs text-gray-400 mb-1">Claims</p>
+                                <p class="text-xl font-bold text-white">${stats.claims.toLocaleString()}</p>
                             </div>
-                            <div class="bg-gray-50 p-3 rounded-lg">
-                                <p class="text-xs text-gray-600 mb-1">참여 유저</p>
-                                <p class="text-xl font-bold text-gray-800">${stats.users.size.toLocaleString()}</p>
+                            <div class="bg-gray-900 bg-opacity-40 p-3 rounded-lg border border-gray-800">
+                                <p class="text-xs text-gray-400 mb-1">Users</p>
+                                <p class="text-xl font-bold text-white">${stats.users.size.toLocaleString()}</p>
                             </div>
-                            <div class="bg-gray-50 p-3 rounded-lg">
-                                <p class="text-xs text-gray-600 mb-1">유저당 평균</p>
-                                <p class="text-xl font-bold text-blue-600">${(stats.claims / stats.users.size).toFixed(1)}</p>
+                            <div class="bg-gray-900 bg-opacity-40 p-3 rounded-lg border border-gray-800">
+                                <p class="text-xs text-gray-400 mb-1">Avg/User</p>
+                                <p class="text-xl font-bold text-blue-400">${(stats.claims / stats.users.size).toFixed(1)}</p>
                             </div>
-                            <div class="bg-gray-50 p-3 rounded-lg">
-                                <p class="text-xs text-gray-600 mb-1">총 지급액</p>
-                                <p class="text-xl font-bold text-gray-800">${stats.totalPaid.toLocaleString()}</p>
+                            <div class="bg-gray-900 bg-opacity-40 p-3 rounded-lg border border-gray-800">
+                                <p class="text-xs text-gray-400 mb-1">Total Paid</p>
+                                <p class="text-xl font-bold text-white">${stats.totalPaid.toLocaleString()}</p>
                             </div>
                         </div>
                         
@@ -1157,14 +1268,14 @@
                         </div>
                         <div class="flex items-center justify-between mt-2">
                             <div class="flex items-center gap-4">
-                                <p class="text-xs text-gray-500" title="클레임 수를 기준으로 한 참여도 지표">📊 활동률: ${progress.toFixed(1)}%</p>
+                                <p class="text-xs text-gray-400" title="클레임 수를 기준으로 한 참여도 지표">📊 Activity: ${progress.toFixed(1)}%</p>
                                 ${returningRateHtml}
                             </div>
                             <div class="flex gap-1">
-                                <button onclick="downloadQuestDataCSV(${quest.id})" class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors" title="CSV 다운로드">
+                                <button onclick="downloadQuestDataCSV(${quest.id})" class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors" title="Download CSV">
                                     📥 CSV
                                 </button>
-                                <button onclick="downloadQuestDataJSON(${quest.id})" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors" title="JSON 다운로드">
+                                <button onclick="downloadQuestDataJSON(${quest.id})" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors" title="Download JSON">
                                     📥 JSON
                                 </button>
                             </div>
@@ -1175,7 +1286,7 @@
             }
 
             // 이벤트 리그 렌더링
-            html += '<h2 class="text-2xl font-bold mb-4 mt-8 text-gray-800">🏆 이벤트 리그</h2>';
+            html += '<h2 class="text-2xl font-bold mb-4 mt-8 text-white">🏆 Event League</h2>';
             
             [1, 2, 3].forEach(round => {
                 const eventQuests = events[round];
@@ -1276,29 +1387,58 @@
             document.getElementById('questList').innerHTML = html || '<p class="text-center text-gray-500 py-8">데이터가 없습니다.</p>';
         }
 
-        // 차트 생성
+        // 차트 생성/업데이트
         function createCharts() {
+            // Chart.js 다크 모드 기본 설정
+            Chart.defaults.color = '#9ca3af';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+            
+            updateChart();
+            updateQuestDistributionChart();
+        }
+        
+        // 일별 클레임 차트 업데이트
+        function updateChart() {
+            const period = document.getElementById('chartPeriodFilter').value;
+            
             const dailyData = {};
             allTransactions.forEach(tx => {
                 const date = new Date(tx.timestamp).toLocaleDateString('ko-KR');
                 dailyData[date] = (dailyData[date] || 0) + 1;
             });
+            
+            // 기간별 데이터 필터링
+            const sortedDates = Object.keys(dailyData).reverse();
+            const sortedValues = Object.values(dailyData).reverse();
+            
+            let limitedDates, limitedValues;
+            if (period === 'all') {
+                limitedDates = sortedDates;
+                limitedValues = sortedValues;
+            } else {
+                const days = parseInt(period);
+                limitedDates = sortedDates.slice(0, days);
+                limitedValues = sortedValues.slice(0, days);
+            }
 
             const ctx1 = document.getElementById('dailyClaimsChart').getContext('2d');
             if (dailyClaimsChart) dailyClaimsChart.destroy();
             dailyClaimsChart = new Chart(ctx1, {
                 type: 'line',
                 data: {
-                    labels: Object.keys(dailyData).reverse().slice(0, 30),
+                    labels: limitedDates,
                     datasets: [{
-                        label: '클레임 수',
-                        data: Object.values(dailyData).reverse().slice(0, 30),
+                        label: 'Claims',
+                        data: limitedValues,
                         borderColor: 'rgb(102, 126, 234)',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
                         tension: 0.4,
                         fill: true,
                         pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: 'rgb(102, 126, 234)',
+                        pointBorderColor: '#0a0a0a',
+                        pointBorderWidth: 2
                     }]
                 },
                 options: {
@@ -1307,18 +1447,46 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].label;
+                                },
+                                label: function(context) {
+                                    return `Claims: ${context.parsed.y}`;
+                                }
+                            }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                precision: 0
+                                precision: 0,
+                                color: '#9ca3af'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#9ca3af',
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
                             }
                         }
                     }
                 }
             });
+        }
+        
+        // 퀘스트 분포 차트
+        function updateQuestDistributionChart() {
 
             const questDistribution = {};
             allTransactions.forEach(tx => {
@@ -1328,11 +1496,11 @@
                     // 이벤트 리그는 하나로 그룹화
                     if (tx.quest.category === 'event') {
                         if (tx.quest.id >= 101 && tx.quest.id < 200) {
-                            questLabel = '이벤트 리그 1';
+                            questLabel = 'Event League 1';
                         } else if (tx.quest.id >= 201 && tx.quest.id < 300) {
-                            questLabel = '이벤트 리그 2';
+                            questLabel = 'Event League 2';
                         } else if (tx.quest.id >= 301 && tx.quest.id < 400) {
-                            questLabel = '이벤트 리그 3';
+                            questLabel = 'Event League 3';
                         } else {
                             questLabel = tx.quest.name;
                         }
@@ -1425,8 +1593,8 @@
             if (pageTransactions.length === 0) {
                 document.getElementById('transactionList').innerHTML = `
                     <tr>
-                        <td colspan="5" class="text-center py-8 text-gray-500">
-                            트랜잭션이 없습니다.
+                        <td colspan="5" class="text-center py-8 text-gray-400">
+                            No transactions.
                         </td>
                     </tr>
                 `;
@@ -1438,24 +1606,24 @@
             const html = pageTransactions.map(tx => {
                 const date = new Date(tx.timestamp);
                 return `
-                    <tr class="border-b hover:bg-gray-50 transition-colors">
-                        <td class="py-3 px-4 text-sm text-gray-600">
+                    <tr class="border-b border-gray-800 hover:bg-gray-900 hover:bg-opacity-30 transition-colors">
+                        <td class="py-3 px-4 text-sm text-gray-300">
                             ${date.toLocaleString('ko-KR')}
                         </td>
                         <td class="py-3 px-4 text-sm">
-                            <span class="font-semibold text-purple-600">Q${tx.quest?.id || '?'}</span>
-                            <span class="text-gray-600 text-xs block">${tx.quest?.name || '미분류'}</span>
+                            <span class="font-semibold text-purple-400">Q${tx.quest?.id || '?'}</span>
+                            <span class="text-gray-400 text-xs block">${tx.quest?.name || 'Unclassified'}</span>
                         </td>
-                        <td class="py-3 px-4 text-sm font-mono text-gray-700">
+                        <td class="py-3 px-4 text-sm font-mono text-gray-300">
                             ${tx.to.substr(0, 6)}...${tx.to.substr(-4)}
                         </td>
                         <td class="py-3 px-4 text-sm text-right">
-                            <span class="font-bold text-green-600">${tx.amount.toFixed(2)} ${tx.token}</span>
+                            <span class="font-bold text-green-400">${tx.amount.toFixed(2)} ${tx.token}</span>
                         </td>
                         <td class="py-3 px-4 text-sm text-center">
                             <a href="https://kaiascan.io/tx/${tx.txHash}" target="_blank" 
-                               class="text-blue-600 hover:text-blue-800 hover:underline text-xs">
-                                보기 →
+                               class="text-blue-400 hover:text-blue-300 hover:underline text-xs">
+                                View →
                             </a>
                         </td>
                     </tr>
