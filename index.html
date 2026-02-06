@@ -1496,20 +1496,20 @@
                     // 이벤트 리그는 하나로 그룹화
                     if (tx.quest.category === 'event') {
                         if (tx.quest.id >= 101 && tx.quest.id < 200) {
-                            questLabel = 'Event League 1';
+                            questLabel = '이벤트 리그 1';
                         } else if (tx.quest.id >= 201 && tx.quest.id < 300) {
-                            questLabel = 'Event League 2';
+                            questLabel = '이벤트 리그 2';
                         } else if (tx.quest.id >= 301 && tx.quest.id < 400) {
-                            questLabel = 'Event League 3';
+                            questLabel = '이벤트 리그 3';
                         } else {
                             questLabel = tx.quest.name;
                         }
                     } else {
-                        // 일반 퀘스트는 이름 사용
-                        questLabel = tx.quest.name;
+                        // 일반 퀘스트는 "Q숫자: 제목" 형식으로 표시
+                        questLabel = `Q${tx.quest.id}: ${tx.quest.name}`;
                         // 이름이 너무 길면 줄임
-                        if (questLabel.length > 20) {
-                            questLabel = questLabel.substring(0, 20) + '...';
+                        if (questLabel.length > 25) {
+                            questLabel = questLabel.substring(0, 25) + '...';
                         }
                     }
                     
@@ -1532,10 +1532,13 @@
                             'rgba(67, 233, 123, 0.8)',
                             'rgba(245, 87, 108, 0.8)',
                             'rgba(250, 204, 21, 0.8)',
-                            'rgba(139, 92, 246, 0.8)'
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(236, 72, 153, 0.8)',
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(251, 146, 60, 0.8)'
                         ],
                         borderWidth: 2,
-                        borderColor: '#fff'
+                        borderColor: 'rgba(10, 10, 10, 0.8)'
                     }]
                 },
                 options: {
@@ -1543,16 +1546,17 @@
                     maintainAspectRatio: true,
                     plugins: {
                         legend: {
+                            display: true,
                             position: 'right',
                             labels: {
-                                padding: 15,
+                                padding: 12,
                                 font: {
-                                    size: 13,
-                                    weight: '500'
+                                    size: 12,
+                                    family: "'Noto Sans KR', -apple-system, sans-serif"
                                 },
-                                color: '#e5e5e5',
-                                boxWidth: 20,
-                                boxHeight: 15,
+                                color: '#ffffff',
+                                boxWidth: 18,
+                                boxHeight: 18,
                                 usePointStyle: false,
                                 generateLabels: function(chart) {
                                     const data = chart.data;
@@ -1562,9 +1566,10 @@
                                             const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                                             const percentage = ((value / total) * 100).toFixed(1);
                                             return {
-                                                text: `${label} (${value}회, ${percentage}%)`,
+                                                text: `${label}: ${value}회 (${percentage}%)`,
                                                 fillStyle: data.datasets[0].backgroundColor[i],
                                                 strokeStyle: data.datasets[0].backgroundColor[i],
+                                                lineWidth: 0,
                                                 hidden: false,
                                                 index: i
                                             };
@@ -1575,6 +1580,12 @@
                             }
                         },
                         tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: 'rgba(102, 126, 234, 0.5)',
+                            borderWidth: 1,
+                            padding: 12,
                             callbacks: {
                                 label: function(context) {
                                     const label = context.label || '';
