@@ -192,21 +192,21 @@
             <div class="flex items-center justify-between mb-4 bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
                 <div>
                     <h1 class="text-4xl font-bold gradient-text mb-2">🎮 Puzzle & Guardians</h1>
-                    <p class="text-gray-400 font-medium">Quest Reward Dashboard</p>
+                    <p class="text-gray-400 font-medium">퀘스트 보상 클레임 현황 대시보드</p>
                 </div>
                 <div class="flex gap-2">
                     <button onclick="clearCache()" class="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 border border-gray-700 transition-colors font-semibold">
-                        🗑️ Clear Cache
+                        🗑️ 캐시 삭제
                     </button>
                     <button onclick="refreshData()" class="px-6 py-3 btn-primary text-white rounded-lg font-semibold shadow-lg">
-                        🔄 Refresh
+                        🔄 새로고침
                     </button>
                 </div>
             </div>
             <div class="bg-black bg-opacity-80 backdrop-blur-xl p-4 rounded-lg border border-white border-opacity-10">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 mb-1">Reward Wallet Address</p>
+                        <p class="text-sm text-gray-500 mb-1">보상 지갑 주소</p>
                         <a 
                             href="https://kaiascan.io/account/0x3156f02e943cefb0247283b7f89b4ebf91133cff" 
                             target="_blank"
@@ -215,7 +215,7 @@
                         </a>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-gray-500">Last Update</p>
+                        <p class="text-xs text-gray-500">마지막 업데이트</p>
                         <p class="text-sm font-semibold text-gray-300" id="lastUpdate">-</p>
                     </div>
                 </div>
@@ -225,22 +225,22 @@
         <!-- 전체 통계 -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="stat-card">
-                <p class="text-sm text-gray-400 mb-1">💰 Wallet Balance</p>
-                <p class="text-3xl font-bold text-white" id="totalBalance">Loading...</p>
+                <p class="text-sm text-gray-400 mb-1">💰 지갑 잔액</p>
+                <p class="text-3xl font-bold text-white" id="totalBalance">로딩중...</p>
                 <p class="text-xs text-gray-500 mt-1">BORA</p>
             </div>
             <div class="stat-card">
-                <p class="text-sm text-gray-400 mb-1">✅ Total Claims</p>
+                <p class="text-sm text-gray-400 mb-1">✅ 총 클레임</p>
                 <p class="text-3xl font-bold text-white" id="totalClaims">0</p>
-                <p class="text-xs text-gray-500 mt-1">claims</p>
+                <p class="text-xs text-gray-500 mt-1">건</p>
             </div>
             <div class="stat-card">
-                <p class="text-sm text-gray-400 mb-1">👥 Unique Users</p>
+                <p class="text-sm text-gray-400 mb-1">👥 참여 유저</p>
                 <p class="text-3xl font-bold text-white" id="uniqueUsers">0</p>
-                <p class="text-xs text-gray-500 mt-1">users</p>
+                <p class="text-xs text-gray-500 mt-1">명</p>
             </div>
             <div class="stat-card">
-                <p class="text-sm text-gray-400 mb-1">💸 Total Paid</p>
+                <p class="text-sm text-gray-400 mb-1">💸 총 지급액</p>
                 <p class="text-3xl font-bold text-white" id="totalPaid">0</p>
                 <p class="text-xs text-gray-500 mt-1">BORA</p>
             </div>
@@ -250,42 +250,42 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-white">📊 Daily Claims Trend</h2>
+                    <h2 class="text-xl font-bold text-white">📊 일별 클레임 추이</h2>
                     <select id="chartPeriodFilter" onchange="updateChart()" class="px-3 py-2 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option value="7">Last 7 Days</option>
-                        <option value="30" selected>Last 30 Days</option>
-                        <option value="60">Last 60 Days</option>
-                        <option value="90">Last 90 Days</option>
-                        <option value="all">All Time</option>
+                        <option value="7">최근 7일</option>
+                        <option value="30" selected>최근 30일</option>
+                        <option value="60">최근 60일</option>
+                        <option value="90">최근 90일</option>
+                        <option value="all">전체 기간</option>
                     </select>
                 </div>
                 <canvas id="dailyClaimsChart"></canvas>
             </div>
             <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
-                <h2 class="text-xl font-bold mb-4 text-white">🎯 Quest Distribution</h2>
+                <h2 class="text-xl font-bold mb-4 text-white">🎯 퀘스트별 분포</h2>
                 <canvas id="questDistributionChart"></canvas>
             </div>
         </div>
 
         <!-- 유저 검색 섹션 -->
         <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10 mb-8">
-            <h2 class="text-xl font-bold mb-4 text-white">🔍 User Search</h2>
+            <h2 class="text-xl font-bold mb-4 text-white">🔍 유저 검색</h2>
             <div class="flex gap-3 mb-4">
                 <input 
                     type="text" 
                     id="userSearchInput" 
-                    placeholder="Enter wallet address (0x...)" 
+                    placeholder="지갑 주소 입력 (0x...)" 
                     class="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500"
                 />
                 <button 
                     onclick="searchUser()" 
                     class="px-6 py-3 btn-primary text-white rounded-lg font-semibold">
-                    Search
+                    검색
                 </button>
                 <button 
                     onclick="clearSearch()" 
                     class="px-6 py-3 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 border border-gray-700 transition-colors font-semibold">
-                    Clear
+                    초기화
                 </button>
             </div>
             
@@ -295,13 +295,13 @@
                 <div class="bg-gradient-to-r from-purple-900 from-opacity-30 to-blue-900 to-opacity-30 p-4 rounded-lg mb-4 border border-purple-500 border-opacity-30">
                     <!-- 지갑 주소 (전체 너비) -->
                     <div class="mb-4 pb-3 border-b border-purple-500 border-opacity-30">
-                        <p class="text-xs text-gray-400 mb-1">Wallet Address</p>
+                        <p class="text-xs text-gray-400 mb-1">지갑 주소</p>
                         <div class="flex items-center gap-2">
                             <p class="font-mono text-sm font-bold text-purple-400 break-all" id="searchedAddress">-</p>
                             <button 
                                 onclick="copySearchedAddress()" 
                                 class="text-gray-500 hover:text-purple-400 transition-colors flex-shrink-0"
-                                title="Copy address">
+                                title="주소 복사">
                                 📋
                             </button>
                         </div>
@@ -310,30 +310,30 @@
                     <!-- 통계 (3컬럼) -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <p class="text-xs text-gray-400 mb-1">Total Claims</p>
+                            <p class="text-xs text-gray-400 mb-1">총 클레임</p>
                             <p class="text-2xl font-bold text-purple-400" id="searchedClaimCount">0</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-400 mb-1">Total Amount</p>
+                            <p class="text-xs text-gray-400 mb-1">총 수령액</p>
                             <p class="text-2xl font-bold text-green-400" id="searchedTotalAmount">0 BORA</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-400 mb-1">Average Amount</p>
+                            <p class="text-xs text-gray-400 mb-1">평균 금액</p>
                             <p class="text-2xl font-bold text-blue-400" id="searchedAvgAmount">0 BORA</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 클레임 내역 -->
-                <h3 class="font-bold text-white mb-3">📋 Claim History</h3>
+                <h3 class="font-bold text-white mb-3">📋 클레임 내역</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="bg-gray-900 bg-opacity-50 border-b border-gray-700">
-                                <th class="text-left py-3 px-4 text-gray-400 font-semibold">Date</th>
-                                <th class="text-left py-3 px-4 text-gray-400 font-semibold">Quest</th>
-                                <th class="text-right py-3 px-4 text-gray-400 font-semibold">Amount</th>
-                                <th class="text-left py-3 px-4 text-gray-400 font-semibold">Transaction</th>
+                                <th class="text-left py-3 px-4 text-gray-400 font-semibold">날짜</th>
+                                <th class="text-left py-3 px-4 text-gray-400 font-semibold">퀘스트</th>
+                                <th class="text-right py-3 px-4 text-gray-400 font-semibold">금액</th>
+                                <th class="text-left py-3 px-4 text-gray-400 font-semibold">트랜잭션</th>
                             </tr>
                         </thead>
                         <tbody id="searchedTransactions">
@@ -345,8 +345,8 @@
             
             <!-- 검색 결과 없음 -->
             <div id="userSearchNoResult" class="hidden text-center py-8 text-gray-400">
-                <p class="text-lg mb-2">🔍 No results found</p>
-                <p class="text-sm">No claim history for this wallet address.</p>
+                <p class="text-lg mb-2">🔍 검색 결과가 없습니다</p>
+                <p class="text-sm">해당 지갑 주소의 클레임 내역이 없습니다.</p>
             </div>
         </div>
 
@@ -354,17 +354,17 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- 최다 클레임 유저 -->
             <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
-                <h2 class="text-xl font-bold mb-4 text-white">🏆 Top 10 Most Claims</h2>
+                <h2 class="text-xl font-bold mb-4 text-white">🏆 최다 클레임 유저 Top 10</h2>
                 <div id="topClaimUsers" class="space-y-3">
-                    <p class="text-center text-gray-400 py-4">Loading...</p>
+                    <p class="text-center text-gray-400 py-4">데이터 로딩중...</p>
                 </div>
             </div>
             
             <!-- 최다 금액 수령 유저 -->
             <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
-                <h2 class="text-xl font-bold mb-4 text-white">💰 Top 10 Highest Amount</h2>
+                <h2 class="text-xl font-bold mb-4 text-white">💰 최다 금액 수령 유저 Top 10</h2>
                 <div id="topAmountUsers" class="space-y-3">
-                    <p class="text-center text-gray-400 py-4">Loading...</p>
+                    <p class="text-center text-gray-400 py-4">데이터 로딩중...</p>
                 </div>
             </div>
         </div>
@@ -372,7 +372,7 @@
         <!-- 퀘스트별 상세 현황 -->
         <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10 mb-8">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-white">📋 Quest Details</h2>
+                <h2 class="text-xl font-bold text-white">📋 퀘스트별 상세 현황</h2>
                 <div class="flex gap-2">
                     <button onclick="downloadQuestStatsCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm">
                         📥 CSV
@@ -381,24 +381,24 @@
                         📥 JSON
                     </button>
                     <select id="questFilter" class="px-4 py-2 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option value="status-active">Active Only</option>
-                        <option value="default">All</option>
-                        <option value="id-asc">Quest ID ↑</option>
-                        <option value="id-desc">Quest ID ↓</option>
-                        <option value="start-asc">Start Date ↑</option>
-                        <option value="start-desc">Start Date ↓</option>
-                        <option value="reward-asc">Reward ↑</option>
-                        <option value="reward-desc">Reward ↓</option>
-                        <option value="claims-desc">Claims ↓</option>
-                        <option value="claims-asc">Claims ↑</option>
-                        <option value="status-ended">Ended Only</option>
+                        <option value="status-active">진행중만 보기</option>
+                        <option value="default">전체 보기</option>
+                        <option value="id-asc">퀘스트 번호순 ↑</option>
+                        <option value="id-desc">퀘스트 번호순 ↓</option>
+                        <option value="start-asc">시작일순 ↑</option>
+                        <option value="start-desc">시작일순 ↓</option>
+                        <option value="reward-asc">보상 규모순 ↑</option>
+                        <option value="reward-desc">보상 규모순 ↓</option>
+                        <option value="claims-desc">클레임 많은순</option>
+                        <option value="claims-asc">클레임 적은순</option>
+                        <option value="status-ended">종료된 것만 보기</option>
                     </select>
                 </div>
             </div>
             <div id="questList" class="space-y-4">
                 <div class="text-center py-12">
                     <div class="loading mx-auto"></div>
-                    <p class="mt-4 text-gray-400">Analyzing data...</p>
+                    <p class="mt-4 text-gray-400">데이터 분석중...</p>
                 </div>
             </div>
         </div>
@@ -406,12 +406,12 @@
         <!-- 최근 클레임 내역 -->
         <div class="bg-black bg-opacity-80 backdrop-blur-xl p-6 rounded-lg border border-white border-opacity-10">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold text-white">🕒 Recent Claims</h2>
+                <h2 class="text-xl font-bold text-white">🕒 최근 클레임 내역</h2>
                 <div class="flex gap-2">
                     <select id="transactionQuestFilter" onchange="filterTransactions()" class="px-4 py-2 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option value="all">All Quests</option>
-                        <option value="regular">Regular Only</option>
-                        <option value="event">Event League Only</option>
+                        <option value="all">전체 퀘스트</option>
+                        <option value="regular">일반 퀘스트만</option>
+                        <option value="event">이벤트 리그만</option>
                         <!-- 개별 퀘스트는 JS로 추가 -->
                     </select>
                     <button onclick="downloadTransactionsCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm">
@@ -426,27 +426,27 @@
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-gray-700 bg-gray-900 bg-opacity-50">
-                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Time</th>
-                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Quest</th>
-                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Recipient</th>
-                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-400">Reward</th>
-                            <th class="text-center py-3 px-4 text-sm font-semibold text-gray-400">Transaction</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">시간</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">퀘스트</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">수신자</th>
+                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-400">보상액</th>
+                            <th class="text-center py-3 px-4 text-sm font-semibold text-gray-400">트랜잭션</th>
                         </tr>
                     </thead>
                     <tbody id="transactionList">
                         <tr>
                             <td colspan="5" class="text-center py-8">
                                 <div class="loading mx-auto"></div>
-                                <p class="mt-4 text-gray-400">Loading transactions...</p>
+                                <p class="mt-4 text-gray-400">트랜잭션 로딩중...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="mt-4 flex justify-between items-center">
-                <button id="prevPage" class="px-4 py-2 btn-primary text-white rounded-lg disabled:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 transition-colors" disabled>← Prev</button>
-                <span class="text-gray-400 font-semibold">Page <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
-                <button id="nextPage" class="px-4 py-2 btn-primary text-white rounded-lg transition-colors">Next →</button>
+                <button id="prevPage" class="px-4 py-2 btn-primary text-white rounded-lg disabled:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 transition-colors" disabled>← 이전</button>
+                <span class="text-gray-400 font-semibold">페이지 <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+                <button id="nextPage" class="px-4 py-2 btn-primary text-white rounded-lg transition-colors">다음 →</button>
             </div>
         </div>
     </div>
@@ -937,28 +937,28 @@
                                     <button 
                                         onclick="copyAddress('${user.address}')" 
                                         class="text-gray-500 hover:text-purple-400 transition-colors"
-                                        title="Copy address">
+                                        title="주소 복사">
                                         📋
                                     </button>
                                     <button 
                                         onclick="searchUserByAddress('${user.address}')" 
                                         class="text-gray-500 hover:text-blue-400 transition-colors"
-                                        title="View details">
+                                        title="상세 보기">
                                         🔍
                                     </button>
                                 </div>
-                                <p class="text-xs text-gray-500">Avg ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})} BORA</p>
+                                <p class="text-xs text-gray-500">평균 ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})} BORA</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-lg font-bold text-purple-400">${user.claimCount} claims</p>
+                            <p class="text-lg font-bold text-purple-400">${user.claimCount}회</p>
                             <p class="text-xs text-gray-500">${user.totalAmount.toLocaleString()} BORA</p>
                         </div>
                     </div>
                 `;
             }).join('');
             
-            document.getElementById('topClaimUsers').innerHTML = html || '<p class="text-center text-gray-400 py-4">No data available.</p>';
+            document.getElementById('topClaimUsers').innerHTML = html || '<p class="text-center text-gray-400 py-4">데이터가 없습니다.</p>';
         }
         
         // 최다 금액 수령 유저 렌더링
@@ -978,28 +978,28 @@
                                     <button 
                                         onclick="copyAddress('${user.address}')" 
                                         class="text-gray-500 hover:text-purple-400 transition-colors"
-                                        title="Copy address">
+                                        title="주소 복사">
                                         📋
                                     </button>
                                     <button 
                                         onclick="searchUserByAddress('${user.address}')" 
                                         class="text-gray-500 hover:text-blue-400 transition-colors"
-                                        title="View details">
+                                        title="상세 보기">
                                         🔍
                                     </button>
                                 </div>
-                                <p class="text-xs text-gray-500">${user.claimCount} claims</p>
+                                <p class="text-xs text-gray-500">${user.claimCount}회 클레임</p>
                             </div>
                         </div>
                         <div class="text-right">
                             <p class="text-lg font-bold text-green-400">${user.totalAmount.toLocaleString()} BORA</p>
-                            <p class="text-xs text-gray-500">Avg ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})}</p>
+                            <p class="text-xs text-gray-500">평균 ${avgAmount.toLocaleString(undefined, {maximumFractionDigits: 1})}</p>
                         </div>
                     </div>
                 `;
             }).join('');
             
-            document.getElementById('topAmountUsers').innerHTML = html || '<p class="text-center text-gray-400 py-4">No data available.</p>';
+            document.getElementById('topAmountUsers').innerHTML = html || '<p class="text-center text-gray-400 py-4">데이터가 없습니다.</p>';
         }
 
         // 유저 검색
@@ -1190,13 +1190,13 @@
             let html = '';
 
             // 일반 퀘스트 렌더링
-            html += '<h2 class="text-2xl font-bold mb-4 text-white">📊 Regular Quests</h2>';
+            html += '<h2 class="text-2xl font-bold mb-4 text-white">📊 일반 퀘스트</h2>';
             
             if (regularQuests.length === 0) {
-                html += '<p class="text-center text-gray-400 py-8 mb-8">No quests match the criteria.</p>';
+                html += '<p class="text-center text-gray-400 py-8 mb-8">해당 조건의 퀘스트가 없습니다.</p>';
             } else {
                 regularQuests.forEach(({quest, stats, status}) => {
-                const statusText = status === 'active' ? 'Active' : status === 'ended' ? 'Ended' : 'Upcoming';
+                const statusText = status === 'active' ? '진행중' : status === 'ended' ? '종료' : '예정';
                 const statusClass = status === 'active' ? 'bg-green-500' : status === 'ended' ? 'bg-red-500' : 'bg-orange-500';
                 const cardClass = status === 'active' ? 'quest-active' : status === 'ended' ? 'quest-ended' : 'quest-upcoming';
                 
@@ -1221,7 +1221,7 @@
                     }
                     
                     returningRateHtml = `<p class="text-xs ${returningRate >= 50 ? 'text-green-400' : 'text-orange-400'} font-semibold" title="${tooltip}" style="cursor: help;">
-                        🔄 Returning: ${returningRate.toFixed(1)}%
+                        🔄 기존 유저: ${returningRate.toFixed(1)}%
                     </p>`;
                 }
 
@@ -1230,7 +1230,7 @@
                         <div class="flex items-start justify-between mb-3">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <h3 class="font-bold text-lg text-white">Quest ${quest.id}: ${quest.name}</h3>
+                                    <h3 class="font-bold text-lg text-white">퀘스트 ${quest.id}: ${quest.name}</h3>
                                     <span class="status-badge ${statusClass} text-white">${statusText}</span>
                                 </div>
                                 <p class="text-sm text-gray-400 mb-2">${quest.description}</p>
@@ -1240,25 +1240,25 @@
                             </div>
                             <div class="text-right">
                                 <p class="text-2xl font-bold text-purple-400">${quest.reward} ${quest.token}</p>
-                                <p class="text-xs text-gray-500">Reward</p>
+                                <p class="text-xs text-gray-500">보상</p>
                             </div>
                         </div>
                         
                         <div class="grid grid-cols-4 gap-4 mb-3">
                             <div class="bg-gray-900 bg-opacity-40 p-3 rounded-lg border border-gray-800">
-                                <p class="text-xs text-gray-400 mb-1">Claims</p>
+                                <p class="text-xs text-gray-400 mb-1">클레임 수</p>
                                 <p class="text-xl font-bold text-white">${stats.claims.toLocaleString()}</p>
                             </div>
                             <div class="bg-gray-900 bg-opacity-40 p-3 rounded-lg border border-gray-800">
-                                <p class="text-xs text-gray-400 mb-1">Users</p>
+                                <p class="text-xs text-gray-400 mb-1">참여 유저</p>
                                 <p class="text-xl font-bold text-white">${stats.users.size.toLocaleString()}</p>
                             </div>
                             <div class="bg-gray-900 bg-opacity-40 p-3 rounded-lg border border-gray-800">
-                                <p class="text-xs text-gray-400 mb-1">Avg/User</p>
+                                <p class="text-xs text-gray-400 mb-1">유저당 평균</p>
                                 <p class="text-xl font-bold text-blue-400">${(stats.claims / stats.users.size).toFixed(1)}</p>
                             </div>
                             <div class="bg-gray-900 bg-opacity-40 p-3 rounded-lg border border-gray-800">
-                                <p class="text-xs text-gray-400 mb-1">Total Paid</p>
+                                <p class="text-xs text-gray-400 mb-1">총 지급액</p>
                                 <p class="text-xl font-bold text-white">${stats.totalPaid.toLocaleString()}</p>
                             </div>
                         </div>
@@ -1268,14 +1268,14 @@
                         </div>
                         <div class="flex items-center justify-between mt-2">
                             <div class="flex items-center gap-4">
-                                <p class="text-xs text-gray-400" title="클레임 수를 기준으로 한 참여도 지표">📊 Activity: ${progress.toFixed(1)}%</p>
+                                <p class="text-xs text-gray-400" title="클레임 수를 기준으로 한 참여도 지표">📊 활동률: ${progress.toFixed(1)}%</p>
                                 ${returningRateHtml}
                             </div>
                             <div class="flex gap-1">
-                                <button onclick="downloadQuestDataCSV(${quest.id})" class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors" title="Download CSV">
+                                <button onclick="downloadQuestDataCSV(${quest.id})" class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors" title="CSV 다운로드">
                                     📥 CSV
                                 </button>
-                                <button onclick="downloadQuestDataJSON(${quest.id})" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors" title="Download JSON">
+                                <button onclick="downloadQuestDataJSON(${quest.id})" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors" title="JSON 다운로드">
                                     📥 JSON
                                 </button>
                             </div>
@@ -1286,7 +1286,7 @@
             }
 
             // 이벤트 리그 렌더링
-            html += '<h2 class="text-2xl font-bold mb-4 mt-8 text-white">🏆 Event League</h2>';
+            html += '<h2 class="text-2xl font-bold mb-4 mt-8 text-white">🏆 이벤트 리그</h2>';
             
             [1, 2, 3].forEach(round => {
                 const eventQuests = events[round];
@@ -1428,7 +1428,7 @@
                 data: {
                     labels: limitedDates,
                     datasets: [{
-                        label: 'Claims',
+                        label: '클레임 수',
                         data: limitedValues,
                         borderColor: 'rgb(102, 126, 234)',
                         backgroundColor: 'rgba(102, 126, 234, 0.2)',
@@ -1454,7 +1454,7 @@
                                     return context[0].label;
                                 },
                                 label: function(context) {
-                                    return `Claims: ${context.parsed.y}`;
+                                    return `클레임: ${context.parsed.y}건`;
                                 }
                             }
                         }
@@ -1594,7 +1594,7 @@
                 document.getElementById('transactionList').innerHTML = `
                     <tr>
                         <td colspan="5" class="text-center py-8 text-gray-400">
-                            No transactions.
+                            트랜잭션이 없습니다.
                         </td>
                     </tr>
                 `;
@@ -1612,7 +1612,7 @@
                         </td>
                         <td class="py-3 px-4 text-sm">
                             <span class="font-semibold text-purple-400">Q${tx.quest?.id || '?'}</span>
-                            <span class="text-gray-400 text-xs block">${tx.quest?.name || 'Unclassified'}</span>
+                            <span class="text-gray-400 text-xs block">${tx.quest?.name || '미분류'}</span>
                         </td>
                         <td class="py-3 px-4 text-sm font-mono text-gray-300">
                             ${tx.to.substr(0, 6)}...${tx.to.substr(-4)}
@@ -1623,7 +1623,7 @@
                         <td class="py-3 px-4 text-sm text-center">
                             <a href="https://kaiascan.io/tx/${tx.txHash}" target="_blank" 
                                class="text-blue-400 hover:text-blue-300 hover:underline text-xs">
-                                View →
+                                보기 →
                             </a>
                         </td>
                     </tr>
