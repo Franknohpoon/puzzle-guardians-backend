@@ -408,6 +408,12 @@
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-bold text-white">🕒 최근 클레임 내역</h2>
                 <div class="flex gap-2">
+                    <select id="itemsPerPageSelect" onchange="changeItemsPerPage()" class="px-4 py-2 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="10" selected>10개씩 보기</option>
+                        <option value="20">20개씩 보기</option>
+                        <option value="50">50개씩 보기</option>
+                        <option value="100">100개씩 보기</option>
+                    </select>
                     <select id="transactionQuestFilter" onchange="filterTransactions()" class="px-4 py-2 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         <option value="all">전체 퀘스트</option>
                         <option value="regular">일반 퀘스트만</option>
@@ -564,6 +570,7 @@
         ];
 
         let currentPage = 1;
+        let itemsPerPage = 10; // 기본값을 10으로 변경
         let allTransactions = [];
         let filteredTransactions = []; // 필터링된 트랜잭션
         let questStatsData = {};
@@ -1605,7 +1612,6 @@
 
         // 트랜잭션 목록 표시
         function displayTransactions() {
-            const itemsPerPage = 20;
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
             const pageTransactions = filteredTransactions.slice(start, end);
@@ -1692,6 +1698,14 @@
             }
             
             currentPage = 1;
+            displayTransactions();
+        }
+        
+        // 페이지당 항목 수 변경
+        function changeItemsPerPage() {
+            const select = document.getElementById('itemsPerPageSelect');
+            itemsPerPage = parseInt(select.value);
+            currentPage = 1; // 첫 페이지로 리셋
             displayTransactions();
         }
 
