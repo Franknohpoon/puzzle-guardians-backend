@@ -1390,7 +1390,7 @@
         // 차트 생성/업데이트
         function createCharts() {
             // Chart.js 다크 모드 기본 설정
-            Chart.defaults.color = '#9ca3af';
+            Chart.defaults.color = '#ffffff';
             Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
             
             updateChart();
@@ -1551,7 +1551,8 @@
                             labels: {
                                 padding: 12,
                                 font: {
-                                    size: 12,
+                                    size: 13,
+                                    weight: 'bold',
                                     family: "'Noto Sans KR', -apple-system, sans-serif"
                                 },
                                 color: '#ffffff',
@@ -1569,6 +1570,7 @@
                                                 text: `${label}: ${value}회 (${percentage}%)`,
                                                 fillStyle: data.datasets[0].backgroundColor[i],
                                                 strokeStyle: data.datasets[0].backgroundColor[i],
+                                                fontColor: '#ffffff',
                                                 lineWidth: 0,
                                                 hidden: false,
                                                 index: i
